@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.provider.Settings;
 import android.widget.RemoteViews;
 
 import com.ibm.icu.util.PersianCalendar;
@@ -85,8 +84,6 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         if (alarmManager == null) return;
 
         long now = System.currentTimeMillis();
-
-        // زمان اجرای بعدی: ابتدای دقیقه بعد
         long nextMinute = now - (now % 60000L) + 60000L;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
@@ -123,7 +120,6 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
                 context.getPackageName(),
                 R.layout.world_clock_widget);
 
-        // همه شهرها از یک لحظه زمانی استفاده می‌کنند
         long now = System.currentTimeMillis();
 
         setTehran(views, now);
@@ -171,7 +167,8 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         String zone = "Europe/Istanbul";
 
         SimpleDateFormat dateFormat =
-                new SimpleDateFormat("d MMMM yyyy",
+                new SimpleDateFormat(
+                        "d MMMM yyyy",
                         new Locale("tr", "TR"));
 
         dateFormat.setTimeZone(
@@ -191,7 +188,9 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         String zone = "Asia/Shanghai";
 
         SimpleDateFormat dateFormat =
-                new SimpleDateFormat("MMM d, yyyy", Locale.US);
+                new SimpleDateFormat(
+                        "yyyy MMMM d",
+                        Locale.US);
 
         dateFormat.setTimeZone(
                 java.util.TimeZone.getTimeZone(zone));
