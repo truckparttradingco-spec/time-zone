@@ -1,6 +1,48 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-<TextView android:id="@+id/name_istanbul" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="استانبول" android:textColor="#2878D0" android:textSize="13sp" android:gravity="center"/>
-<TextView android:id="@+id/time_istanbul" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="--:--" android:textColor="#172033" android:textSize="21sp" android:textStyle="bold" android:gravity="center"/>
-<TextView android:id="@+id/greg_istanbul" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="2026/10/29" android:textColor="#586174" android:textSize="9sp" android:gravity="center"/>
-<TextView android:id="@+id/jalali_istanbul" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="۱۴۰۵/۰۸/۰۷" android:textColor="#586174" android:textSize="9sp" android:gravity="center"/>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="3dp">
+
+    <TextView
+        android:id="@+id/name_istanbul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🇹🇷 استانبول"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/time_istanbul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="--:--"
+        android:textColor="#FFFFFF"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/greg_istanbul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="31 Ekim 2026"
+        android:textColor="#FFFFFF"
+        android:textSize="8sp"
+        android:gravity="center"
+        android:singleLine="true"
+        android:includeFontPadding="false" />
+
+    <TextView
+        android:id="@+id/jalali_istanbul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="8sp"
+        android:gravity="center" />
 </LinearLayout>
