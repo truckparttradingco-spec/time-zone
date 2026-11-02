@@ -161,7 +161,10 @@ public class MainActivity extends Activity {
         String[] slotNames={"جایگاه ۱","جایگاه ۲","جایگاه ۳"};
         Spinner slotSpinner=new Spinner(this);
         slotSpinner.setAdapter(new ArrayAdapter<>(this,R.layout.spinner_item,slotNames));
-        slotSpinner.setSelection(selectedSlot); slotSpinner.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        ArrayAdapter<String> slotAdapter=new ArrayAdapter<>(this,R.layout.spinner_item,slotNames);
+        slotAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        slotSpinner.setAdapter(slotAdapter);
+        slotSpinner.setSelection(selectedSlot);
         slotSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
             @Override public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){selectedSlot=pos;}
             @Override public void onNothingSelected(android.widget.AdapterView<?> p){}
