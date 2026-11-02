@@ -7,9 +7,13 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -20,27 +24,30 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
     private static final String PREFS = "world_clock_settings";
     private final Handler handler = new Handler();
-    private final TextView[] times = new TextView[3];
-    private final TextView[] dates = new TextView[3];
-    private final TextView[] offsets = new TextView[3];
+    private final TextView[] times = new TextView[3], dates = new TextView[3], offsets = new TextView[3];
     private final String[] keys = {"slot_1","slot_2","slot_3"};
-    private final String[] defaults = {"tehran","istanbul","shanghai"};
+    private final String[] defaults = {"germany","istanbul","shanghai"};
     private SharedPreferences prefs;
-    private Spinner holidayCountry;
+    private LinearLayout root, content, nav;
     private TextView holidayStatus, holidayList, holidayYearLabel;
     private int holidayYear = Calendar.getInstance().get(Calendar.YEAR);
-    private String selectedHolidayCountry = "tehran";
+    private String selectedHolidayCountry = "germany";
+    private int currentTab = 0;
+    private int selectedSlot = 0;
+    private String countryQuery = "";
 
     private final Runnable ticker = new Runnable() {
         @Override public void run() {
+            if (prefs == null) return;
             long now = System.currentTimeMillis();
             for (int i=0;i<3;i++) {
                 CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(keys[i], defaults[i]));
-                times[i].setText(ClockFormatter.time(c, now));
+                times[i].setText(ClockFormatter.time(c, now, prefs.getBoolean("use_24_hour", false)));
                 dates[i].setText(ClockFormatter.date(c, now));
                 offsets[i].setText(ClockFormatter.offset(c, now));
             }
@@ -51,167 +58,218 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        selectedHolidayCountry = prefs.getString(keys[0], defaults[0]);
-        buildScreen();
+        selectedHolidayCountry = prefs.getString("holiday_country", prefs.getString(keys[0], defaults[0]));
+        buildShell();
+        showTab(0);
     }
+
     private int dp(float v) { return (int)(v * getResources().getDisplayMetrics().density + 0.5f); }
     private TextView text(String value, int size, int color) {
         TextView t = new TextView(this); t.setText(value); t.setTextSize(size); t.setTextColor(color);
-        t.setGravity(Gravity.CENTER); t.setPadding(dp(6),dp(5),dp(6),dp(5)); return t;
+        t.setGravity(Gravity.CENTER); t.setPadding(dp(7),dp(7),dp(7),dp(7)); return t;
     }
-    private GradientDrawable panel(int top, int bottom, int stroke) {
-        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{top, bottom});
-        d.setCornerRadius(dp(18));
-        d.setStroke(dp(1), stroke);
-        return d;
+    private GradientDrawable panel(int color, int stroke) {
+        GradientDrawable d = new GradientDrawable(); d.setColor(color); d.setCornerRadius(dp(16)); d.setStroke(dp(1),stroke); return d;
     }
+    private LinearLayout vertical() { LinearLayout l=new LinearLayout(this); l.setOrientation(LinearLayout.VERTICAL); return l; }
+    private LinearLayout horizontal() { LinearLayout l=new LinearLayout(this); l.setOrientation(LinearLayout.HORIZONTAL); l.setGravity(Gravity.CENTER_VERTICAL); return l; }
     private LinearLayout card(LinearLayout parent) {
-        LinearLayout c = new LinearLayout(this); c.setOrientation(LinearLayout.VERTICAL);
-        c.setPadding(dp(12),dp(12),dp(12),dp(12));
-        c.setBackground(panel(Color.BLACK, Color.BLACK, Color.rgb(36,80,120)));
-        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(-1,-2);
-        cp.setMargins(0,dp(12),0,0); parent.addView(c,cp); return c;
+        LinearLayout c=vertical(); c.setPadding(dp(12),dp(10),dp(12),dp(10)); c.setBackground(panel(Color.rgb(8,17,29),Color.rgb(38,76,112)));
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2); p.setMargins(0,dp(9),0,0); parent.addView(c,p); return c;
     }
-    private void buildScreen() {
-        ScrollView scroll = new ScrollView(this);
-        LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(16),dp(18),dp(16),dp(20));
-        root.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{Color.BLACK,Color.BLACK,Color.BLACK}));
-        scroll.addView(root);
-        LinearLayout brand = new LinearLayout(this);
-        brand.setGravity(Gravity.CENTER_VERTICAL);
-        brand.setPadding(dp(4),dp(4),dp(4),dp(8));
-        TextView logo = text("TIME",22,Color.WHITE);
-        logo.setTypeface(Typeface.SERIF,Typeface.NORMAL);
-        logo.setBackground(panel(Color.rgb(255,35,35),Color.rgb(205,0,0),Color.rgb(255,80,80)));
-        logo.setPadding(dp(12),dp(7),dp(12),dp(7));
-        brand.addView(logo,new LinearLayout.LayoutParams(-2,-2));
-        TextView title=text("TIME",30,Color.WHITE);
-        title.setTypeface(Typeface.SERIF,Typeface.BOLD);
-        LinearLayout.LayoutParams titleParams=new LinearLayout.LayoutParams(-2,-2);
-        titleParams.setMargins(dp(12),0,0,0); brand.addView(title,titleParams);
-        root.addView(brand);
-        TextView subtitle=text("ساعت جهانی و تقویم کشورها",14,Color.WHITE); root.addView(subtitle);
-        TextView local=text("منطقه زمانی دستگاه: " + ZoneId.systemDefault().getId(),13,Color.rgb(245,199,107));
-        root.addView(local);
-        for(int i=0;i<3;i++) {
-            final int slot=i;
-            LinearLayout countryCard=card(root);
-            TextView heading=text("🌐  جایگاه " + (i+1) + " · انتخاب کشور / شهر",14,Color.rgb(245,199,107));
-            heading.setTypeface(null,Typeface.BOLD); countryCard.addView(heading);
-            Spinner spinner=new Spinner(this);
-            List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
-            ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.spinner_item,labels);
-            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item); spinner.setAdapter(adapter);
-            spinner.setPopupBackgroundDrawable(panel(Color.rgb(10,25,46),Color.rgb(10,25,46),Color.rgb(70,95,130)));
-            spinner.setSelection(CountryCatalog.indexOf(prefs.getString(keys[i],defaults[i])));
-            countryCard.addView(spinner);
-            times[i]=text("--:--",36,Color.WHITE); times[i].setTypeface(Typeface.DEFAULT,Typeface.BOLD); countryCard.addView(times[i]);
-            dates[i]=text("",15,Color.rgb(235,239,248)); countryCard.addView(dates[i]);
-            offsets[i]=text("",13,Color.rgb(255,199,75)); countryCard.addView(offsets[i]);
-            spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-                boolean first=true;
-                @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                    String selected=CountryCatalog.ALL.get(position).id;
-                    if(first) { first=false; return; }
-                    prefs.edit().putString(keys[slot],selected).apply();
-                    refreshWidget(); ticker.run();
-                    if (slot == 0 && holidayCountry != null) {
-                        selectedHolidayCountry = selected;
-                        holidayCountry.setSelection(position);
-                    }
-                }
-                @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-            });
+    private Button button(String label, Runnable action) {
+        Button b=new Button(this); b.setText(label); b.setTextColor(Color.WHITE); b.setTextSize(12);
+        b.setAllCaps(false); b.setBackground(panel(Color.rgb(24,47,72),Color.rgb(62,105,145)));
+        b.setOnClickListener(v->action.run()); return b;
+    }
+    private void buildShell() {
+        ScrollView scroll=new ScrollView(this);
+        root=vertical(); root.setPadding(dp(15),dp(12),dp(15),dp(16));
+        root.setBackgroundColor(Color.BLACK); scroll.addView(root);
+        LinearLayout header=horizontal();
+        TextView logo=text("TIME",22,Color.WHITE); logo.setTypeface(Typeface.SERIF,Typeface.BOLD);
+        logo.setBackground(panel(Color.rgb(190,20,30),Color.rgb(255,90,90)));
+        header.addView(logo);
+        TextView tagline=text("  WORLD CLOCK",15,Color.rgb(245,199,107)); tagline.setTypeface(null,Typeface.BOLD);
+        header.addView(tagline); root.addView(header);
+        content=vertical(); root.addView(content,new LinearLayout.LayoutParams(-1,-2));
+        nav=horizontal(); nav.setGravity(Gravity.CENTER); nav.setPadding(0,dp(8),0,0);
+        String[] labels={"خانه","کشورها","تقویم","تنظیمات"};
+        for(int i=0;i<labels.length;i++) {
+            final int tab=i;
+            Button b=button(labels[i],()->showTab(tab));
+            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-2,1); p.setMargins(dp(2),0,dp(2),0); nav.addView(b,p);
         }
-
-        buildHolidayCalendar(root);
-
-        TextView note=text("تقویم‌های محلی: شمسی برای ایران، هجری قمری برای عراق و کشورهای خلیج فارس، بودایی برای تایلند، جمهوری چین برای تایوان و میلادی محلی برای سایر کشورها. ساعت تابستانی با پایگاه منطقه زمانی دستگاه اعمال می‌شود.",13,Color.LTGRAY);
-        LinearLayout.LayoutParams np=new LinearLayout.LayoutParams(-1,-2); np.setMargins(0,dp(16),0,0); root.addView(note,np);
-        TextView refresh=text("به‌روزرسانی ساعت‌ها",15,Color.WHITE);
-        refresh.setBackground(panel(Color.rgb(245,25,35),Color.rgb(185,0,12),Color.rgb(255,90,90)));
-        refresh.setOnClickListener(v->{ticker.run(); refreshWidget();});
-        LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,-2); rp.setMargins(0,dp(12),0,0); root.addView(refresh,rp);
+        root.addView(nav);
         setContentView(scroll);
     }
+    private void showTab(int tab) {
+        currentTab=tab; content.removeAllViews();
+        String[] names={"خانه","کشورها","تقویم","تنظیمات"};
+        TextView heading=text(names[tab],23,Color.WHITE); heading.setTypeface(null,Typeface.BOLD);
+        content.addView(heading);
+        if(tab==0) buildHome();
+        else if(tab==1) buildCountries();
+        else if(tab==2) buildCalendar();
+        else buildSettings();
+        for(int i=0;i<nav.getChildCount();i++) {
+            Button b=(Button)nav.getChildAt(i);
+            b.setBackground(panel(i==tab?Color.rgb(150,25,35):Color.rgb(24,47,72),i==tab?Color.rgb(255,100,100):Color.rgb(62,105,145)));
+        }
+    }
 
-    private void buildHolidayCalendar(LinearLayout root) {
-        LinearLayout section = card(root);
-        TextView heading = text("▦  تقویم سالانه · مناسبت‌ها و تعطیلات",19,Color.WHITE);
-        heading.setTypeface(null,Typeface.BOLD); section.addView(heading);
-        TextView hint = text("کشور را انتخاب کن تا تعطیلات رسمی همان سال نمایش داده شود.",13,Color.LTGRAY);
-        section.addView(hint);
-        holidayCountry = new Spinner(this);
-        List<String> labels = new ArrayList<>();
-        for (CountryCatalog.Country c : CountryCatalog.ALL) labels.add(c.toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.spinner_item,labels);
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        holidayCountry.setAdapter(adapter);
-        holidayCountry.setSelection(CountryCatalog.indexOf(selectedHolidayCountry));
-        section.addView(holidayCountry);
-        holidayCountry.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                selectedHolidayCountry = CountryCatalog.ALL.get(position).id;
-                loadHolidays(false);
-            }
-            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+    private void buildHome() {
+        TextView subtitle=text("ساعت شهرهای انتخابی شما · به‌روزرسانی خودکار هر ۱۵ ثانیه",13,Color.LTGRAY);
+        content.addView(subtitle);
+        TextView local=text("منطقه زمانی دستگاه: "+ZoneId.systemDefault().getId(),12,Color.rgb(245,199,107)); content.addView(local);
+        for(int i=0;i<3;i++) {
+            final int slot=i;
+            LinearLayout c=card(content);
+            TextView title=text("جایگاه "+(i+1)+" · انتخاب شهر",14,Color.rgb(245,199,107)); title.setTypeface(null,Typeface.BOLD); c.addView(title);
+            Spinner spinner=new Spinner(this);
+            List<String> labels=new ArrayList<>(); for(CountryCatalog.Country country:CountryCatalog.ALL) labels.add(country.toString());
+            ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.spinner_item,labels);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item); spinner.setAdapter(adapter);
+            spinner.setSelection(CountryCatalog.indexOf(prefs.getString(keys[i],defaults[i]))); c.addView(spinner);
+            times[i]=text("--:--",38,Color.WHITE); times[i].setTypeface(Typeface.DEFAULT,Typeface.BOLD); c.addView(times[i]);
+            dates[i]=text("",14,Color.LTGRAY); c.addView(dates[i]);
+            offsets[i]=text("",12,Color.rgb(245,199,107)); c.addView(offsets[i]);
+            spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                boolean first=true;
+                @Override public void onItemSelected(android.widget.AdapterView<?> p,View v,int position,long id) {
+                    if(first){first=false;return;}
+                    prefs.edit().putString(keys[slot],CountryCatalog.ALL.get(position).id).apply();
+                    if(slot==0) { selectedHolidayCountry=CountryCatalog.ALL.get(position).id; prefs.edit().putString("holiday_country",selectedHolidayCountry).apply(); }
+                    refreshWidget(); ticker.run();
+                }
+                @Override public void onNothingSelected(android.widget.AdapterView<?> p) {}
+            });
+        }
+        LinearLayout actions=horizontal();
+        actions.addView(button("مدیریت شهرها",()->showTab(1)),new LinearLayout.LayoutParams(0,-2,1));
+        actions.addView(button("تنظیمات",()->showTab(3)),new LinearLayout.LayoutParams(0,-2,1));
+        content.addView(actions);
+        ticker.run();
+    }
+
+    private void buildCountries() {
+        TextView intro=text("شهر دلخواه را جست‌وجو و با یک لمس در یکی از سه جایگاه ساعت قرار بده.",13,Color.LTGRAY); content.addView(intro);
+        EditText search=new EditText(this); search.setSingleLine(true); search.setTextColor(Color.WHITE);
+        search.setHintTextColor(Color.GRAY); search.setHint("جست‌وجوی کشور یا شهر…"); search.setText(countryQuery);
+        search.setBackground(panel(Color.rgb(12,24,39),Color.rgb(62,105,145))); content.addView(search);
+        TextView slotLabel=text("انتخاب جایگاه مقصد",13,Color.rgb(245,199,107)); content.addView(slotLabel);
+        String[] slotNames={"جایگاه ۱","جایگاه ۲","جایگاه ۳"};
+        Spinner slotSpinner=new Spinner(this);
+        slotSpinner.setAdapter(new ArrayAdapter<>(this,R.layout.spinner_item,slotNames));
+        slotSpinner.setSelection(selectedSlot); slotSpinner.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        slotSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
+            @Override public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){selectedSlot=pos;}
+            @Override public void onNothingSelected(android.widget.AdapterView<?> p){}
         });
-        LinearLayout yearRow = new LinearLayout(this); yearRow.setGravity(Gravity.CENTER);
-        TextView previous = text("سال قبل",14,Color.WHITE);
-        previous.setBackgroundColor(Color.rgb(55,68,88));
-        holidayYearLabel = text(String.valueOf(holidayYear),18,Color.rgb(232,193,119));
-        TextView next = text("سال بعد",14,Color.WHITE);
-        next.setBackgroundColor(Color.rgb(55,68,88));
-        yearRow.addView(previous,new LinearLayout.LayoutParams(0,-2,1));
+        content.addView(slotSpinner);
+        LinearLayout list=vertical(); content.addView(list);
+        Runnable render=()->{
+            list.removeAllViews();
+            String q=countryQuery.trim().toLowerCase(new Locale("fa"));
+            for(CountryCatalog.Country c:CountryCatalog.ALL) {
+                if(!q.isEmpty()&&!c.name.toLowerCase(new Locale("fa")).contains(q)&&!c.id.contains(q)&&!c.zone.toLowerCase(Locale.ROOT).contains(q)) continue;
+                LinearLayout row=card(list);
+                TextView name=text(c.toString(),15,Color.WHITE); name.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL); row.addView(name);
+                TextView meta=text(c.zone+"  ·  "+c.calendar,11,Color.LTGRAY); meta.setGravity(Gravity.RIGHT); row.addView(meta);
+                row.addView(button("افزودن به "+slotNames[selectedSlot],()->{
+                    prefs.edit().putString(keys[selectedSlot],c.id).apply();
+                    refreshWidget(); showTab(0);
+                }));
+            }
+            if(list.getChildCount()==0) list.addView(text("موردی پیدا نشد.",14,Color.LTGRAY));
+        };
+        search.addTextChangedListener(new TextWatcher(){
+            @Override public void beforeTextChanged(CharSequence s,int st,int count,int after){}
+            @Override public void onTextChanged(CharSequence s,int st,int before,int count){countryQuery=s.toString();render.run();}
+            @Override public void afterTextChanged(Editable e){}
+        });
+        render.run();
+    }
+
+    private void buildCalendar() {
+        LinearLayout section=card(content);
+        TextView hint=text("تعطیلات رسمی سال انتخاب‌شده بر اساس منبع عمومی Nager.Date",13,Color.LTGRAY); section.addView(hint);
+        Spinner country=new Spinner(this);
+        List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
+        ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.spinner_item,labels);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item); country.setAdapter(adapter);
+        country.setSelection(CountryCatalog.indexOf(selectedHolidayCountry)); section.addView(country);
+        country.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
+            @Override public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){
+                selectedHolidayCountry=CountryCatalog.ALL.get(pos).id;
+                prefs.edit().putString("holiday_country",selectedHolidayCountry).apply(); loadHolidays(false);
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> p){}
+        });
+        LinearLayout yearRow=horizontal();
+        yearRow.addView(button("سال قبل",()->{holidayYear--;holidayYearLabel.setText(String.valueOf(holidayYear));loadHolidays(false);}),new LinearLayout.LayoutParams(0,-2,1));
+        holidayYearLabel=text(String.valueOf(holidayYear),19,Color.rgb(245,199,107));
         yearRow.addView(holidayYearLabel,new LinearLayout.LayoutParams(0,-2,1));
-        yearRow.addView(next,new LinearLayout.LayoutParams(0,-2,1));
+        yearRow.addView(button("سال بعد",()->{holidayYear++;holidayYearLabel.setText(String.valueOf(holidayYear));loadHolidays(false);}),new LinearLayout.LayoutParams(0,-2,1));
         section.addView(yearRow);
-        previous.setOnClickListener(v->{holidayYear--; holidayYearLabel.setText(String.valueOf(holidayYear)); loadHolidays(false);});
-        next.setOnClickListener(v->{holidayYear++; holidayYearLabel.setText(String.valueOf(holidayYear)); loadHolidays(false);});
-        holidayStatus = text("در حال بررسی تقویم…",12,Color.LTGRAY); section.addView(holidayStatus);
-        holidayList = text("",14,Color.WHITE); holidayList.setGravity(Gravity.RIGHT);
-        holidayList.setPadding(dp(8),dp(10),dp(8),dp(10)); section.addView(holidayList);
-        TextView force = text("دریافت تازه‌ترین تعطیلات",13,Color.rgb(232,193,119));
-        force.setOnClickListener(v->loadHolidays(true)); section.addView(force);
+        holidayStatus=text("در حال دریافت تقویم…",12,Color.LTGRAY); section.addView(holidayStatus);
+        holidayList=text("",14,Color.WHITE); holidayList.setGravity(Gravity.RIGHT); holidayList.setPadding(dp(8),dp(12),dp(8),dp(12)); section.addView(holidayList);
+        section.addView(button("دریافت مجدد اطلاعات",()->loadHolidays(true)));
+        loadHolidays(false);
     }
 
     private void loadHolidays(boolean force) {
-        if (holidayStatus == null) return;
-        CountryCatalog.Country country = CountryCatalog.byId(selectedHolidayCountry);
-        holidayStatus.setText("تقویم " + country.name + " · در حال بررسی اطلاعات ذخیره‌شده…");
-        HolidayCalendar.load(this, country, holidayYear, force, (json, fromCache, error) ->
-                runOnUiThread(() -> {
-                    if (!selectedHolidayCountry.equals(country.id) || holidayYear != Integer.parseInt(holidayYearLabel.getText().toString())) return;
-                    if (json == null) {
-                        holidayStatus.setText(error == null ? "اطلاعات تقویم در دسترس نیست." : error);
-                        return;
-                    }
-                    try {
-                        JSONArray items = new JSONArray(json);
-                        StringBuilder out = new StringBuilder();
-                        for (int i=0;i<items.length();i++) {
-                            JSONObject item = items.getJSONObject(i);
-                            String date = item.optString("date","");
-                            String name = item.optString("localName", item.optString("name",""));
-                            String english = item.optString("name","");
-                            out.append("• ").append(date).append("\n  ").append(name);
-                            if (!english.isEmpty() && !english.equals(name)) out.append(" · ").append(english);
-                            out.append("\n\n");
-                        }
-                        holidayList.setText(out.length()==0 ? "برای این سال موردی از منبع عمومی دریافت نشد." : out.toString());
-                        holidayStatus.setText("تعداد مناسبت‌های رسمی: " + items.length()
-                                + (fromCache ? " · نمایش از حافظهٔ دستگاه" : " · اطلاعات تازه دریافت شد")
-                                + " · ذخیره برای استفادهٔ آفلاین");
-                    } catch (Exception e) {
-                        holidayStatus.setText("خواندن اطلاعات تقویم با خطا روبه‌رو شد.");
-                    }
-                }));
+        if(holidayStatus==null||holidayYearLabel==null) return;
+        CountryCatalog.Country country=CountryCatalog.byId(selectedHolidayCountry);
+        int requestedYear=holidayYear;
+        holidayStatus.setText("تقویم "+country.name+" · در حال دریافت…");
+        HolidayCalendar.load(this,country,requestedYear,force,(json,fromCache,error)->runOnUiThread(()->{
+            if(currentTab!=2||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
+            if(json==null){holidayStatus.setText(error==null?"اطلاعات در دسترس نیست.":error);return;}
+            try {
+                JSONArray items=new JSONArray(json); StringBuilder out=new StringBuilder();
+                for(int i=0;i<items.length();i++){
+                    JSONObject item=items.getJSONObject(i);
+                    String date=item.optString("date",""), name=item.optString("localName",item.optString("name",""));
+                    String english=item.optString("name","");
+                    out.append("• ").append(date).append("\n  ").append(name);
+                    if(!english.isEmpty()&&!english.equals(name))out.append(" · ").append(english);
+                    out.append("\n\n");
+                }
+                holidayList.setText(out.length()==0?"برای این سال تعطیلی رسمی از منبع دریافت نشد.":out.toString());
+                holidayStatus.setText("تعداد تعطیلات رسمی: "+items.length()+(fromCache?" · حافظه دستگاه":" · دریافت تازه")+" · منبع: Nager.Date");
+            }catch(Exception e){holidayStatus.setText("خواندن داده‌های تقویم ناموفق بود.");}
+        }));
     }
 
-    private void refreshWidget() { IntentHelper.update(this); }
-    @Override protected void onResume() { super.onResume(); if(prefs!=null) { ticker.run(); if(holidayStatus!=null) loadHolidays(false); } }
-    @Override protected void onPause() { super.onPause(); handler.removeCallbacks(ticker); }
+    private void buildSettings() {
+        LinearLayout c=card(content);
+        TextView info=text("تنظیمات در حافظه دستگاه ذخیره می‌شوند و پس از بستن برنامه باقی می‌مانند.",13,Color.LTGRAY); c.addView(info);
+        android.widget.Switch clockSwitch=new android.widget.Switch(this);
+        clockSwitch.setText("نمایش ساعت ۲۴ ساعته"); clockSwitch.setTextColor(Color.WHITE);
+        clockSwitch.setChecked(prefs.getBoolean("use_24_hour",false)); c.addView(clockSwitch);
+        clockSwitch.setOnCheckedChangeListener((button,checked)->{
+            prefs.edit().putBoolean("use_24_hour",checked).apply(); refreshWidget(); if(currentTab==0){ticker.run();}
+        });
+        TextView refresh=text("بازه به‌روزرسانی ساعت: ۱۵ ثانیه",14,Color.WHITE); c.addView(refresh);
+        TextView detail=text("ساعت‌ها به‌صورت خودکار هر ۱۵ ثانیه تازه می‌شوند. ویجت نیز هنگام بازشدن صفحه یا تغییر شهر به‌روزرسانی می‌شود.",12,Color.LTGRAY); c.addView(detail);
+        c.addView(button("بازگردانی شهرهای پیش‌فرض",()->{
+            prefs.edit().putString(keys[0],"germany").putString(keys[1],"istanbul").putString(keys[2],"shanghai").apply();
+            refreshWidget(); showTab(0);
+        }));
+        c.addView(button("به‌روزرسانی ویجت",()->refreshWidget()));
+        c.addView(button("پاک‌سازی حافظه تقویم",()->{
+            getSharedPreferences("holiday_calendar_cache",MODE_PRIVATE).edit().clear().apply();
+            if(currentTab==3) {
+                TextView done=text("حافظه موقت تقویم پاک شد؛ اطلاعات هنگام ورود به بخش تقویم دوباره دریافت می‌شود.",12,Color.rgb(245,199,107)); c.addView(done);
+            }
+        }));
+        c.addView(button("درباره TIME",()->{
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.1\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+        }));
+    }
+
+    private void refreshWidget(){IntentHelper.update(this);}
+    @Override protected void onResume(){super.onResume();if(prefs!=null&&times[0]!=null&&currentTab==0)ticker.run();}
+    @Override protected void onPause(){super.onPause();handler.removeCallbacks(ticker);}
 }
