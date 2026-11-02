@@ -235,14 +235,15 @@ public class MainActivity extends Activity {
             if(currentTab!=2||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
             if(json==null){
                 holidayStatus.setText(error==null?"اطلاعات تعطیلات در دسترس نیست.":error);
-                holidayMonths.removeAllViews();
+                CalendarRenderer.render(this,holidayMonths,country,requestedYear,new JSONArray());
                 return;
             }
             try {
                 JSONArray items=new JSONArray(json);
                 CalendarRenderer.render(this,holidayMonths,country,requestedYear,items);
-                holidayStatus.setText("تعطیلات ثبت‌شده: "+items.length()+
-                        (fromCache?" · حافظه دستگاه":" · دریافت تازه")+" · منبع: Nager.Date");
+                holidayStatus.setText("تعطیلات ثبت‌شده در منبع: "+items.length()+
+                        (fromCache?" · حافظه دستگاه":" · دریافت تازه")+
+                        " · منبع: Nager.Date · برخی تعطیلات قمری وابسته به رؤیت هلال ممکن است درج نشده باشند.");
             }catch(Exception e){
                 holidayStatus.setText("ساخت تقویم ناموفق بود: "+e.getMessage());
             }
