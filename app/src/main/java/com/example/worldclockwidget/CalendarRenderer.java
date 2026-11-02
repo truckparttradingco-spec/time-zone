@@ -47,6 +47,11 @@ public final class CalendarRenderer {
 
     public static void render(Activity activity, LinearLayout target,
                               CountryCatalog.Country country, int year, JSONArray holidays) {
+        render(activity, target, country, year, holidays, 1);
+    }
+
+    public static void render(Activity activity, LinearLayout target,
+                              CountryCatalog.Country country, int year, JSONArray holidays, int mode) {
         target.removeAllViews();
         Locale locale = locale(country);
         TimeZone zone = TimeZone.getTimeZone(country.zone);
@@ -93,7 +98,9 @@ public final class CalendarRenderer {
         month.set(Calendar.DAY_OF_MONTH, 1);
         month.set(Calendar.HOUR_OF_DAY, 12);
 
-        for (int m = 0; m < 12; m++) {
+        int firstMonth = mode == 0 ? Calendar.getInstance(zone, locale).get(Calendar.MONTH) : 0;
+        int lastMonth = mode == 0 ? firstMonth + 1 : 12;
+        for (int m = firstMonth; m < lastMonth; m++) {
             month.set(Calendar.MONTH, m);
             month.set(Calendar.DAY_OF_MONTH, 1);
             LinearLayout card = new LinearLayout(activity);
@@ -115,6 +122,7 @@ public final class CalendarRenderer {
             title.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
             card.addView(title);
 
+            if (mode != 2) {
             int firstDay = month.getFirstDayOfWeek();
             int actualFirst = month.get(Calendar.DAY_OF_WEEK);
             int leading = (actualFirst - firstDay + 7) % 7;
@@ -164,6 +172,8 @@ public final class CalendarRenderer {
                     week.addView(label(activity, "", 12, Color.WHITE, false),
                             new LinearLayout.LayoutParams(0, dp(activity, 29), 1));
                 }
+            }
+
             }
 
             ViewDivider.add(activity, card);
