@@ -7,38 +7,55 @@
     android:gravity="center"
     android:background="@drawable/widget_bg"
     android:padding="10dp">
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="WORLD CLOCK · ساعت جهانی"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:paddingBottom="7dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="7dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIME"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="serif"
+            android:background="#F01818"
+            android:paddingLeft="9dp"
+            android:paddingRight="9dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  ساعت جهانی"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="3">
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="3dp">
-            <TextView android:id="@+id/city_name_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇮🇷 ایران · تهران" android:textColor="#E7B96B" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
+            <TextView android:id="@+id/city_name_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇮🇷 ایران · تهران" android:textColor="#FFC84A" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
             <TextView android:id="@+id/city_time_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="--:--" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" android:gravity="center"/>
             <TextView android:id="@+id/city_date_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFFFFF" android:textSize="9sp" android:gravity="center" android:maxLines="2"/>
-            <TextView android:id="@+id/city_zone_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#AAB2C0" android:textSize="8sp" android:gravity="center"/>
+            <TextView android:id="@+id/city_zone_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFC84A" android:textSize="8sp" android:gravity="center"/>
         </LinearLayout>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="3dp">
-            <TextView android:id="@+id/city_name_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇹🇷 ترکیه · استانبول" android:textColor="#E7B96B" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
+            <TextView android:id="@+id/city_name_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇹🇷 ترکیه · استانبول" android:textColor="#FFC84A" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
             <TextView android:id="@+id/city_time_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="--:--" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" android:gravity="center"/>
             <TextView android:id="@+id/city_date_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFFFFF" android:textSize="9sp" android:gravity="center" android:maxLines="2"/>
-            <TextView android:id="@+id/city_zone_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#AAB2C0" android:textSize="8sp" android:gravity="center"/>
+            <TextView android:id="@+id/city_zone_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFC84A" android:textSize="8sp" android:gravity="center"/>
         </LinearLayout>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="3dp">
-            <TextView android:id="@+id/city_name_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇨🇳 چین · شانگهای" android:textColor="#E7B96B" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
+            <TextView android:id="@+id/city_name_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇨🇳 چین · شانگهای" android:textColor="#FFC84A" android:textSize="11sp" android:gravity="center" android:maxLines="1"/>
             <TextView android:id="@+id/city_time_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="--:--" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" android:gravity="center"/>
             <TextView android:id="@+id/city_date_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFFFFF" android:textSize="9sp" android:gravity="center" android:maxLines="2"/>
-            <TextView android:id="@+id/city_zone_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#AAB2C0" android:textSize="8sp" android:gravity="center"/>
+            <TextView android:id="@+id/city_zone_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#FFC84A" android:textSize="8sp" android:gravity="center"/>
         </LinearLayout>
     </LinearLayout>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="برای تنظیم کشورها، ویجت را لمس کنید" android:textColor="#AAB2C0" android:textSize="9sp" android:gravity="center" android:paddingTop="5dp"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="برای تنظیم کشورها، ویجت را لمس کنید" android:textColor="#B8C6DA" android:textSize="9sp" android:gravity="center" android:paddingTop="5dp"/>
 </LinearLayout>
