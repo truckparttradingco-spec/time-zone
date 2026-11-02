@@ -208,7 +208,7 @@ public class MainActivity extends Activity {
                 selectedHolidayCountry=CountryCatalog.ALL.get(pos).id;
                 prefs.edit().putString("holiday_country",selectedHolidayCountry).apply();
                 holidayYear=CalendarRenderer.currentYear(CountryCatalog.ALL.get(pos));
-                holidayYearLabel.setText(String.valueOf(holidayYear));
+                if (holidayYearLabel != null) holidayYearLabel.setText(String.valueOf(holidayYear));
                 loadHolidays(false);
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> p){}
