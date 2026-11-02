@@ -59,7 +59,13 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
             for (int i=0;i<3;i++) {
                 CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(KEYS[i],DEFAULTS[i]));
                 views.setTextViewText(names[i], c.toString());
-                views.setTextViewText(times[i], ClockFormatter.time(c,now,prefs.getBoolean("use_24_hour",false)));
+                // TextClock is hosted by the launcher and ticks from Android's system clock.
+                // It keeps updating every second even when TIME is not running.
+                views.setString(times[i], "setTimeZone", c.zone);
+                boolean use24 = prefs.getBoolean("use_24_hour", false);
+                String clockPattern = use24 ? "HH:mm:ss" : "h:mm:ss a";
+                views.setString(times[i], "setFormat12Hour", clockPattern);
+                views.setString(times[i], "setFormat24Hour", clockPattern);
                 views.setTextViewText(dates[i], ClockFormatter.date(c,now));
                 views.setTextViewText(zones[i], ClockFormatter.offset(c,now));
             }
