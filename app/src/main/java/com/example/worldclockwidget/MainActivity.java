@@ -1,7 +1,7 @@
 package com.example.worldclockwidget;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.SharedPreferences;\nimport android.content.Intent;\nimport android.net.Uri;\nimport android.provider.Settings;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -63,6 +63,31 @@ public class MainActivity extends Activity {
         holidayYear = CalendarRenderer.currentYear(CountryCatalog.byId(selectedHolidayCountry));
         buildShell();
         showTab(0);
+        requestExactAlarmAccessIfNeeded();
+    }
+
+    private void requestExactAlarmAccessIfNeeded() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return;
+        android.app.AlarmManager alarms = (android.app.AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarms == null || alarms.canScheduleExactAlarms()) return;
+        if (prefs.getBoolean("exact_alarm_prompted", false)) return;
+        prefs.edit().putBoolean("exact_alarm_prompted", true).apply();
+        try {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception ignored) {
+            // The widget continues with Android's inexact alarm fallback.
+        }
+    }
+
+    private void openExactAlarmSettings() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return;
+        try {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception ignored) {}
     }
 
     private int dp(float v) { return (int)(v * getResources().getDisplayMetrics().density + 0.5f); }
@@ -263,7 +288,8 @@ public class MainActivity extends Activity {
             prefs.edit().putBoolean("use_24_hour",checked).apply(); refreshWidget(); if(currentTab==0){ticker.run();}
         });
         TextView refresh=text("بازه به‌روزرسانی ساعت: ۱ ثانیه",14,Color.WHITE); c.addView(refresh);
-        TextView detail=text("ساعت‌های داخل اپ هر ثانیه تازه می‌شوند. ویجت با ساعت سیستمی Android مستقل از باز بودن اپ کار می‌کند.",12,Color.LTGRAY); c.addView(detail);
+        TextView detail=text("ساعت‌های داخل اپ هر ثانیه تازه می‌شوند. ویجت مستقل از باز بودن اپ با آلارم دقیقه‌ای به‌روزرسانی می‌شود. برای دقت بیشتر در Android 12 و بالاتر، دسترسی «Alarms & reminders» را فعال کن.",12,Color.LTGRAY); c.addView(detail);
+        c.addView(button("فعال‌سازی به‌روزرسانی دقیق ویجت",()->openExactAlarmSettings()));
         c.addView(button("بازگردانی شهرهای پیش‌فرض",()->{
             prefs.edit().putString(keys[0],"germany").putString(keys[1],"istanbul").putString(keys[2],"shanghai").apply();
             refreshWidget(); showTab(0);
@@ -276,7 +302,7 @@ public class MainActivity extends Activity {
             }
         }));
         c.addView(button("درباره TIME",()->{
-            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.4\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.5\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
         }));
     }
 
