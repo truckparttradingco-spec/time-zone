@@ -384,12 +384,12 @@ public class MainActivity extends Activity {
             if(currentTab!=1||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
             if(json==null){
                 holidayStatus.setText(error==null?"اطلاعات تعطیلات در دسترس نیست.":error);
-                CalendarRenderer.render(this,holidayMonths,country,requestedYear,new JSONArray());
+                CalendarRenderer.render(this,holidayMonths,country,requestedYear,new JSONArray(),prefs.getInt("calendar_mode",1));
                 return;
             }
             try {
                 JSONArray items=new JSONArray(json);
-                CalendarRenderer.render(this,holidayMonths,country,requestedYear,items);
+                CalendarRenderer.render(this,holidayMonths,country,requestedYear,items,prefs.getInt("calendar_mode",1));
                 holidayStatus.setText("تعطیلات ثبت‌شده در منبع: "+items.length()+
                         (fromCache?" · حافظه دستگاه":" · دریافت تازه")+
                         (error!=null?" · دریافت بعضی سال‌های میلادی کامل نشد":"")+
