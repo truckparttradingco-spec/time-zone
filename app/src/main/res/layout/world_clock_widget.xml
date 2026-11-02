@@ -39,13 +39,11 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_time_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Europe/Berlin"
-                android:format12Hour="HH:mm"
-                android:format24Hour="HH:mm"
+                android:text="--:--"
                 android:textColor="#FFFFFF"
                 android:textSize="23sp"
                 android:textStyle="bold"
@@ -111,13 +109,11 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_time_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Europe/Istanbul"
-                android:format12Hour="HH:mm"
-                android:format24Hour="HH:mm"
+                android:text="--:--"
                 android:textColor="#FFFFFF"
                 android:textSize="23sp"
                 android:textStyle="bold"
@@ -183,13 +179,11 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_time_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Asia/Shanghai"
-                android:format12Hour="HH:mm"
-                android:format24Hour="HH:mm"
+                android:text="--:--"
                 android:textColor="#FFFFFF"
                 android:textSize="23sp"
                 android:textStyle="bold"
