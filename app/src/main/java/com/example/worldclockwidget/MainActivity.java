@@ -245,6 +245,7 @@ public class MainActivity extends Activity {
                 CalendarRenderer.render(this,holidayMonths,country,requestedYear,items);
                 holidayStatus.setText("تعطیلات ثبت‌شده در منبع: "+items.length()+
                         (fromCache?" · حافظه دستگاه":" · دریافت تازه")+
+                        (error!=null?" · دریافت بعضی سال‌های میلادی کامل نشد":"")+
                         " · منبع: Nager.Date · برخی تعطیلات قمری وابسته به رؤیت هلال ممکن است درج نشده باشند.");
             }catch(Exception e){
                 holidayStatus.setText("ساخت تقویم ناموفق بود: "+e.getMessage());
