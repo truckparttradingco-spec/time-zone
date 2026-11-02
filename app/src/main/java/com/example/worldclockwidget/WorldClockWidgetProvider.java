@@ -11,7 +11,7 @@ import android.widget.RemoteViews;
 public class WorldClockWidgetProvider extends AppWidgetProvider {
     private static final String PREFS = "world_clock_settings";
     private static final String[] KEYS = {"slot_1","slot_2","slot_3"};
-    private static final String[] DEFAULTS = {"tehran","istanbul","shanghai"};
+    private static final String[] DEFAULTS = {"germany","istanbul","shanghai"};
 
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
         updateWidgets(context, manager, ids);
@@ -59,7 +59,7 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
             for (int i=0;i<3;i++) {
                 CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(KEYS[i],DEFAULTS[i]));
                 views.setTextViewText(names[i], c.toString());
-                views.setTextViewText(times[i], ClockFormatter.time(c,now));
+                views.setTextViewText(times[i], ClockFormatter.time(c,now,prefs.getBoolean("use_24_hour",false)));
                 views.setTextViewText(dates[i], ClockFormatter.date(c,now));
                 views.setTextViewText(zones[i], ClockFormatter.offset(c,now));
             }
