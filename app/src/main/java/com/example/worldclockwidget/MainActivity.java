@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
     private final String[] defaults = {"germany","istanbul","shanghai"};
     private SharedPreferences prefs;
     private LinearLayout root, content, nav;
-    private TextView holidayStatus, holidayList, holidayYearLabel;
+    private TextView holidayStatus, holidayYearLabel;\n    private LinearLayout holidayMonths;
     private int holidayYear = Calendar.getInstance().get(Calendar.YEAR);
     private String selectedHolidayCountry = "germany";
     private int currentTab = 0;
@@ -196,7 +196,8 @@ public class MainActivity extends Activity {
 
     private void buildCalendar() {
         LinearLayout section=card(content);
-        TextView hint=text("تعطیلات رسمی سال انتخاب‌شده بر اساس منبع عمومی Nager.Date",13,Color.LTGRAY); section.addView(hint);
+        TextView hint=text("تقویم سالانه کشور · ماه‌ها و روزها بر اساس تقویم و زبان همان کشور · تعطیلات رسمی زیر هر ماه",13,Color.LTGRAY);
+        section.addView(hint);
         Spinner country=new Spinner(this);
         List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
         ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.spinner_item,labels);
@@ -205,7 +206,10 @@ public class MainActivity extends Activity {
         country.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
             @Override public void onItemSelected(android.widget.AdapterView<?> p,View v,int pos,long id){
                 selectedHolidayCountry=CountryCatalog.ALL.get(pos).id;
-                prefs.edit().putString("holiday_country",selectedHolidayCountry).apply(); loadHolidays(false);
+                prefs.edit().putString("holiday_country",selectedHolidayCountry).apply();
+                holidayYear=CalendarRenderer.currentYear(CountryCatalog.ALL.get(pos));
+                holidayYearLabel.setText(String.valueOf(holidayYear));
+                loadHolidays(false);
             }
             @Override public void onNothingSelected(android.widget.AdapterView<?> p){}
         });
@@ -216,32 +220,32 @@ public class MainActivity extends Activity {
         yearRow.addView(button("سال بعد",()->{holidayYear++;holidayYearLabel.setText(String.valueOf(holidayYear));loadHolidays(false);}),new LinearLayout.LayoutParams(0,-2,1));
         section.addView(yearRow);
         holidayStatus=text("در حال دریافت تقویم…",12,Color.LTGRAY); section.addView(holidayStatus);
-        holidayList=text("",14,Color.WHITE); holidayList.setGravity(Gravity.RIGHT); holidayList.setPadding(dp(8),dp(12),dp(8),dp(12)); section.addView(holidayList);
+        holidayMonths=vertical();
+        content.addView(holidayMonths,new LinearLayout.LayoutParams(-1,-2));
         section.addView(button("دریافت مجدد اطلاعات",()->loadHolidays(true)));
         loadHolidays(false);
     }
 
     private void loadHolidays(boolean force) {
-        if(holidayStatus==null||holidayYearLabel==null) return;
+        if(holidayStatus==null||holidayYearLabel==null||holidayMonths==null) return;
         CountryCatalog.Country country=CountryCatalog.byId(selectedHolidayCountry);
         int requestedYear=holidayYear;
-        holidayStatus.setText("تقویم "+country.name+" · در حال دریافت…");
+        holidayStatus.setText("تقویم "+country.name+" · در حال دریافت تعطیلات…");
         HolidayCalendar.load(this,country,requestedYear,force,(json,fromCache,error)->runOnUiThread(()->{
             if(currentTab!=2||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
-            if(json==null){holidayStatus.setText(error==null?"اطلاعات در دسترس نیست.":error);return;}
+            if(json==null){
+                holidayStatus.setText(error==null?"اطلاعات تعطیلات در دسترس نیست.":error);
+                holidayMonths.removeAllViews();
+                return;
+            }
             try {
-                JSONArray items=new JSONArray(json); StringBuilder out=new StringBuilder();
-                for(int i=0;i<items.length();i++){
-                    JSONObject item=items.getJSONObject(i);
-                    String date=item.optString("date",""), name=item.optString("localName",item.optString("name",""));
-                    String english=item.optString("name","");
-                    out.append("• ").append(date).append("\n  ").append(name);
-                    if(!english.isEmpty()&&!english.equals(name))out.append(" · ").append(english);
-                    out.append("\n\n");
-                }
-                holidayList.setText(out.length()==0?"برای این سال تعطیلی رسمی از منبع دریافت نشد.":out.toString());
-                holidayStatus.setText("تعداد تعطیلات رسمی: "+items.length()+(fromCache?" · حافظه دستگاه":" · دریافت تازه")+" · منبع: Nager.Date");
-            }catch(Exception e){holidayStatus.setText("خواندن داده‌های تقویم ناموفق بود.");}
+                JSONArray items=new JSONArray(json);
+                CalendarRenderer.render(this,holidayMonths,country,requestedYear,items);
+                holidayStatus.setText("تعطیلات ثبت‌شده: "+items.length()+
+                        (fromCache?" · حافظه دستگاه":" · دریافت تازه")+" · منبع: Nager.Date");
+            }catch(Exception e){
+                holidayStatus.setText("ساخت تقویم ناموفق بود: "+e.getMessage());
+            }
         }));
     }
 
