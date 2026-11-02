@@ -122,11 +122,12 @@ public final class CalendarRenderer {
             title.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
             card.addView(title);
 
+            int days = month.getActualMaximum(Calendar.DAY_OF_MONTH);
+            Map<Integer, List<String>> monthHolidays = byMonth.getOrDefault(m, new HashMap<>());
             if (mode != 2) {
             int firstDay = month.getFirstDayOfWeek();
             int actualFirst = month.get(Calendar.DAY_OF_WEEK);
             int leading = (actualFirst - firstDay + 7) % 7;
-            int days = month.getActualMaximum(Calendar.DAY_OF_MONTH);
             String[] weekdays = new DateFormatSymbols(locale).getShortWeekdays();
 
             LinearLayout weekHeader = new LinearLayout(activity);
@@ -141,7 +142,6 @@ public final class CalendarRenderer {
             card.addView(weekHeader);
 
             LinearLayout week = null;
-            Map<Integer, List<String>> monthHolidays = byMonth.getOrDefault(m, new HashMap<>());
             for (int cellIndex = 0; cellIndex < leading + days; cellIndex++) {
                 if (cellIndex % 7 == 0) {
                     week = new LinearLayout(activity);
