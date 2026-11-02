@@ -1,29 +1,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.worldclockwidget">
-
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-
     <application
         android:allowBackup="true"
-        android:label="ساعت سه شهر"
+        android:label="ساعت جهانی"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <receiver
             android:name=".WorldClockWidgetProvider"
+            android:label="ساعت جهانی"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.example.worldclockwidget.UPDATE_CLOCKS" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.DATE_CHANGED"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/world_clock_widget_info" />
+                android:resource="@xml/world_clock_widget_info"/>
         </receiver>
-        <activity android:name=".MainActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 </manifest>
