@@ -137,7 +137,7 @@ public final class HolidayCalendar {
                 String json = result.toString();
                 cache.edit().putString(k, json)
                         .putLong(k + "_saved", System.currentTimeMillis()).apply();
-                callback.onResult(json, false, null);
+                callback.onResult(json, false, lastError);
             } else if (cached == null) {
                 callback.onResult(null, false,
                         "تعطیلات این کشور در منبع فعلی پوشش داده نشده یا اتصال برقرار نیست. (" +
