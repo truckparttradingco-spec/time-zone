@@ -84,7 +84,7 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         long now = System.currentTimeMillis();
         android.content.SharedPreferences prefs =
                 context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        int[] names = {R.id.city_name_1, R.id.city_name_2, R.id.city_name_3};
+        int[] flags = {R.id.city_flag_1, R.id.city_flag_2, R.id.city_flag_3};\n        int[] names = {R.id.city_name_1, R.id.city_name_2, R.id.city_name_3};
         int[] times = {R.id.city_time_1, R.id.city_time_2, R.id.city_time_3};
         int[] dates = {R.id.city_date_1, R.id.city_date_2, R.id.city_date_3};
         int[] zones = {R.id.city_zone_1, R.id.city_zone_2, R.id.city_zone_3};
@@ -99,7 +99,7 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
                 CountryCatalog.Country country =
                         CountryCatalog.byId(prefs.getString(KEYS[i], DEFAULTS[i]));
 
-                views.setTextViewText(names[i], country.flag + "  " + cityName(country));
+                views.setTextViewText(flags[i], country.flag);\n                views.setTextViewText(names[i], cityName(country));
 
                 // Use the same ICU time-zone formatter as the in-app clock.
                 views.setTextViewText(times[i], ClockFormatter.time(country, now, use24Hour));
