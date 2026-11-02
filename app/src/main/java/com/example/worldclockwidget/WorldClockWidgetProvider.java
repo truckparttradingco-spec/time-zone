@@ -8,10 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import java.util.Locale;
+
 public class WorldClockWidgetProvider extends AppWidgetProvider {
     private static final String PREFS = "world_clock_settings";
-    private static final String[] KEYS = {"slot_1","slot_2","slot_3"};
-    private static final String[] DEFAULTS = {"germany","istanbul","shanghai"};
+    private static final String[] KEYS = {"slot_1", "slot_2", "slot_3"};
+    private static final String[] DEFAULTS = {"germany", "istanbul", "shanghai"};
 
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
         updateWidgets(context, manager, ids);
@@ -40,40 +42,79 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
 
     private static void updateAll(Context context) {
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] ids = manager.getAppWidgetIds(new ComponentName(context, WorldClockWidgetProvider.class));
+        int[] ids = manager.getAppWidgetIds(
+                new ComponentName(context, WorldClockWidgetProvider.class));
         updateWidgets(context, manager, ids);
+    }
+
+    private static String cityName(CountryCatalog.Country country) {
+        switch (country.id) {
+            case "tehran": return "Tehran";
+            case "istanbul": return "Istanbul";
+            case "shanghai": return "Shanghai";
+            case "germany": return "Berlin";
+            case "france": return "Paris";
+            case "usa": return "New York";
+            case "uk": return "London";
+            case "russia": return "Moscow";
+            case "iraq": return "Baghdad";
+            case "uae": return "Dubai";
+            case "qatar": return "Doha";
+            case "malaysia": return "Kuala Lumpur";
+            case "thailand": return "Bangkok";
+            case "vietnam": return "Hanoi";
+            case "taiwan": return "Taipei";
+            case "india": return "New Delhi";
+            case "indonesia": return "Jakarta";
+            default: return country.name;
+        }
     }
 
     static void updateWidgets(Context context, AppWidgetManager manager, int[] ids) {
         if (ids == null || ids.length == 0) return;
+
         long now = System.currentTimeMillis();
         android.content.SharedPreferences prefs =
                 context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        int[] names = {R.id.city_name_1,R.id.city_name_2,R.id.city_name_3};
-        int[] times = {R.id.city_time_1,R.id.city_time_2,R.id.city_time_3};
-        int[] dates = {R.id.city_date_1,R.id.city_date_2,R.id.city_date_3};
-        int[] zones = {R.id.city_zone_1,R.id.city_zone_2,R.id.city_zone_3};
+        int[] names = {R.id.city_name_1, R.id.city_name_2, R.id.city_name_3};
+        int[] times = {R.id.city_time_1, R.id.city_time_2, R.id.city_time_3};
+        int[] dates = {R.id.city_date_1, R.id.city_date_2, R.id.city_date_3};
+        int[] zones = {R.id.city_zone_1, R.id.city_zone_2, R.id.city_zone_3};
+
+        boolean use24Hour = prefs.getBoolean("use_24_hour", true);
+        String clockPattern = use24Hour ? "HH:mm" : "h:mm a";
+        String datePattern = "MMM d, EEE";
 
         for (int id : ids) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.world_clock_widget);
-            for (int i=0;i<3;i++) {
-                CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(KEYS[i],DEFAULTS[i]));
-                views.setTextViewText(names[i], c.toString());
-                // TextClock is hosted by the launcher and ticks from Android's system clock.
-                // It keeps updating every second even when TIME is not running.
-                views.setString(times[i], "setTimeZone", c.zone);
-                boolean use24 = prefs.getBoolean("use_24_hour", false);
-                String clockPattern = use24 ? "HH:mm:ss" : "h:mm:ss a";
+            RemoteViews views =
+                    new RemoteViews(context.getPackageName(), R.layout.world_clock_widget);
+
+            for (int i = 0; i < 3; i++) {
+                CountryCatalog.Country country =
+                        CountryCatalog.byId(prefs.getString(KEYS[i], DEFAULTS[i]));
+
+                views.setTextViewText(names[i], country.flag + "  " + cityName(country));
+
+                // TextClock is hosted by the launcher. Each clock uses its own IANA time zone
+                // and follows Android's system clock without requiring the app to stay open.
+                views.setString(times[i], "setTimeZone", country.zone);
                 views.setString(times[i], "setFormat12Hour", clockPattern);
                 views.setString(times[i], "setFormat24Hour", clockPattern);
-                views.setTextViewText(dates[i], ClockFormatter.date(c,now));
-                views.setTextViewText(zones[i], ClockFormatter.offset(c,now));
+
+                // A second system-driven TextClock keeps the date correct at each city's
+                // midnight, even when that differs from the phone's local date.
+                views.setString(dates[i], "setTimeZone", country.zone);
+                views.setString(dates[i], "setFormat12Hour", datePattern);
+                views.setString(dates[i], "setFormat24Hour", datePattern);
+
+                views.setTextViewText(zones[i], ClockFormatter.offset(country, now));
             }
+
             Intent open = new Intent(context, MainActivity.class);
             open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pi = PendingIntent.getActivity(context, id, open,
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, id, open,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            views.setOnClickPendingIntent(R.id.widget_root, pi);
+            views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
             manager.updateAppWidget(id, views);
         }
     }

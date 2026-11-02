@@ -47,11 +47,11 @@ public class MainActivity extends Activity {
             long now = System.currentTimeMillis();
             for (int i=0;i<3;i++) {
                 CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(keys[i], defaults[i]));
-                times[i].setText(ClockFormatter.time(c, now, prefs.getBoolean("use_24_hour", false)));
+                times[i].setText(ClockFormatter.time(c, now, prefs.getBoolean("use_24_hour", true)));
                 dates[i].setText(ClockFormatter.date(c, now));
                 offsets[i].setText(ClockFormatter.offset(c, now));
             }
-            handler.postDelayed(this, 15000);
+            handler.postDelayed(this, 1000);
         }
     };
 
@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
     }
 
     private void buildHome() {
-        TextView subtitle=text("ساعت شهرهای انتخابی شما · به‌روزرسانی خودکار هر ۱۵ ثانیه",13,Color.LTGRAY);
+        TextView subtitle=text("ساعت شهرهای انتخابی شما · به‌روزرسانی خودکار هر ثانیه",13,Color.LTGRAY);
         content.addView(subtitle);
         TextView local=text("منطقه زمانی دستگاه: "+ZoneId.systemDefault().getId(),12,Color.rgb(245,199,107)); content.addView(local);
         for(int i=0;i<3;i++) {
@@ -254,8 +254,8 @@ public class MainActivity extends Activity {
         clockSwitch.setOnCheckedChangeListener((button,checked)->{
             prefs.edit().putBoolean("use_24_hour",checked).apply(); refreshWidget(); if(currentTab==0){ticker.run();}
         });
-        TextView refresh=text("بازه به‌روزرسانی ساعت: ۱۵ ثانیه",14,Color.WHITE); c.addView(refresh);
-        TextView detail=text("ساعت‌ها به‌صورت خودکار هر ۱۵ ثانیه تازه می‌شوند. ویجت نیز هنگام بازشدن صفحه یا تغییر شهر به‌روزرسانی می‌شود.",12,Color.LTGRAY); c.addView(detail);
+        TextView refresh=text("بازه به‌روزرسانی ساعت: ۱ ثانیه",14,Color.WHITE); c.addView(refresh);
+        TextView detail=text("ساعت‌های داخل اپ هر ثانیه تازه می‌شوند. ویجت با ساعت سیستمی Android مستقل از باز بودن اپ کار می‌کند.",12,Color.LTGRAY); c.addView(detail);
         c.addView(button("بازگردانی شهرهای پیش‌فرض",()->{
             prefs.edit().putString(keys[0],"germany").putString(keys[1],"istanbul").putString(keys[2],"shanghai").apply();
             refreshWidget(); showTab(0);
@@ -268,7 +268,7 @@ public class MainActivity extends Activity {
             }
         }));
         c.addView(button("درباره TIME",()->{
-            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.1\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.3\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
         }));
     }
 

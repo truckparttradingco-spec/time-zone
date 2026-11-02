@@ -1,59 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:gravity="center"
     android:background="#000000"
-    android:paddingStart="3dp"
-    android:paddingEnd="3dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:padding="5dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:padding="2dp"
-        android:background="#000000">
-        <TextView android:id="@+id/city_name_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇮🇷 ایران · تهران" android:textColor="#F5C76B" android:textSize="10sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextClock android:id="@+id/city_time_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:format12Hour="h:mm:ss a" android:format24Hour="HH:mm:ss" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false"/>
-        <TextView android:id="@+id/city_date_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#D5DFEC" android:textSize="8sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextView android:id="@+id/city_zone_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#F5C76B" android:textSize="9sp" android:gravity="center"/>
+        android:background="@drawable/widget_bg"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp">
+
+            <TextView
+                android:id="@+id/city_name_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🇩🇪  Berlin"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextClock
+                android:id="@+id/city_time_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="HH:mm"
+                android:format24Hour="HH:mm"
+                android:textColor="#FFFFFF"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextClock
+                android:id="@+id/city_date_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="MMM d, EEE"
+                android:format24Hour="MMM d, EEE"
+                android:textColor="#E5ECF5"
+                android:textSize="9sp"
+                android:fontFamily="sans-serif"
+                android:textLocale="en-US"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:id="@+id/city_zone_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/widget_utc_capsule"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="UTC+1:00"
+                android:textColor="#F5C84C"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="2dp"
+            android:layout_height="66dp"
+            android:background="#168CFF"
+            android:text="" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp">
+
+            <TextView
+                android:id="@+id/city_name_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🇹🇷  Istanbul"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextClock
+                android:id="@+id/city_time_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="HH:mm"
+                android:format24Hour="HH:mm"
+                android:textColor="#FFFFFF"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextClock
+                android:id="@+id/city_date_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="MMM d, EEE"
+                android:format24Hour="MMM d, EEE"
+                android:textColor="#E5ECF5"
+                android:textSize="9sp"
+                android:fontFamily="sans-serif"
+                android:textLocale="en-US"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:id="@+id/city_zone_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/widget_utc_capsule"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="UTC+3:00"
+                android:textColor="#F5C84C"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="2dp"
+            android:layout_height="66dp"
+            android:background="#168CFF"
+            android:text="" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp">
+
+            <TextView
+                android:id="@+id/city_name_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🇨🇳  Shanghai"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextClock
+                android:id="@+id/city_time_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="HH:mm"
+                android:format24Hour="HH:mm"
+                android:textColor="#FFFFFF"
+                android:textSize="23sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextClock
+                android:id="@+id/city_date_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:format12Hour="MMM d, EEE"
+                android:format24Hour="MMM d, EEE"
+                android:textColor="#E5ECF5"
+                android:textSize="9sp"
+                android:fontFamily="sans-serif"
+                android:textLocale="en-US"
+                android:gravity="center"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:id="@+id/city_zone_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/widget_utc_capsule"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="UTC+8:00"
+                android:textColor="#F5C84C"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLines="1" />
+        </LinearLayout>
     </LinearLayout>
-
-    <TextView android:layout_width="1dp" android:layout_height="68dp" android:text="" android:background="#245078"/>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="2dp"
-        android:background="#000000">
-        <TextView android:id="@+id/city_name_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇹🇷 ترکیه · استانبول" android:textColor="#F5C76B" android:textSize="10sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextClock android:id="@+id/city_time_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:format12Hour="h:mm:ss a" android:format24Hour="HH:mm:ss" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false"/>
-        <TextView android:id="@+id/city_date_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#D5DFEC" android:textSize="8sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextView android:id="@+id/city_zone_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#F5C76B" android:textSize="9sp" android:gravity="center"/>
-    </LinearLayout>
-
-    <TextView android:layout_width="1dp" android:layout_height="68dp" android:text="" android:background="#245078"/>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="2dp"
-        android:background="#000000">
-        <TextView android:id="@+id/city_name_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="🇨🇳 چین · شانگهای" android:textColor="#F5C76B" android:textSize="10sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextClock android:id="@+id/city_time_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:format12Hour="h:mm:ss a" android:format24Hour="HH:mm:ss" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" android:gravity="center" android:fontFamily="sans-serif-medium" android:includeFontPadding="false"/>
-        <TextView android:id="@+id/city_date_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#D5DFEC" android:textSize="8sp" android:gravity="center" android:maxLines="1" android:ellipsize="end"/>
-        <TextView android:id="@+id/city_zone_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#F5C76B" android:textSize="9sp" android:gravity="center"/>
-    </LinearLayout>
-</LinearLayout>
+</FrameLayout>
