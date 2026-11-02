@@ -104,8 +104,12 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
                 views.setTextViewText(flags[i], country.flag);
                 views.setTextViewText(names[i], cityName(country));
 
-                // Use the same ICU time-zone formatter as the in-app clock.
-                views.setTextViewText(times[i], ClockFormatter.time(country, now, use24Hour));
+                // TextClock updates itself from Android's system time broadcasts.
+                // It does not depend on this app's periodic alarms or being opened.
+                views.setString(times[i], "setTimeZone", country.zone);
+                CharSequence clockFormat = use24Hour ? "HH:mm" : "h:mm a";
+                views.setCharSequence(times[i], "setFormat24Hour", clockFormat);
+                views.setCharSequence(times[i], "setFormat12Hour", clockFormat);
                 views.setTextViewText(dates[i], ClockFormatter.widgetDate(country, now));
                 views.setTextViewText(zones[i], ClockFormatter.offset(country, now));
             }
