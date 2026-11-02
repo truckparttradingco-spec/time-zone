@@ -113,57 +113,49 @@ public class MainActivity extends Activity {
         b.setOnClickListener(v->action.run()); return b;
     }
     private void buildShell() {
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        root = vertical();
-        root.setPadding(dp(16), dp(12), dp(16), dp(18));
+        root=vertical();
         root.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{Color.rgb(4,10,19), Color.rgb(7,17,31), Color.rgb(3,8,16)}));
-        scroll.addView(root);
-
-        LinearLayout header = horizontal();
+                new int[]{Color.rgb(4,10,19),Color.rgb(7,17,31),Color.rgb(3,8,16)}));
+        root.setPadding(dp(16),dp(10),dp(16),dp(5));
+        LinearLayout header=horizontal();
+        header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView menu = text("☰", 23, Color.LTGRAY);
-        menu.setOnClickListener(v -> showTab(3));
-        header.addView(menu, new LinearLayout.LayoutParams(dp(42), dp(48)));
-        TextView logo = text("TIME", 23, Color.WHITE);
-        logo.setTypeface(Typeface.SERIF, Typeface.BOLD);
-        GradientDrawable logoBg = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{Color.rgb(255,74,79), Color.rgb(165,8,24)});
-        logoBg.setCornerRadius(dp(14)); logoBg.setStroke(dp(1), Color.rgb(255,130,130));
-        logo.setBackground(logoBg);
-        header.addView(logo, new LinearLayout.LayoutParams(dp(68), dp(48)));
-        TextView brand = text("TIME", 22, Color.WHITE);
-        brand.setTypeface(Typeface.SERIF, Typeface.BOLD);
-        brand.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        header.addView(brand, new LinearLayout.LayoutParams(0, dp(48), 1));
-        TextView settings = text("⚙", 25, Color.WHITE);
-        settings.setOnClickListener(v -> showSettings());
-        header.addView(settings, new LinearLayout.LayoutParams(dp(44), dp(48)));
-        root.addView(header);
+        TextView menu=text("≡",26,Color.LTGRAY);
+        menu.setOnClickListener(v->showTab(3));
+        header.addView(menu,new LinearLayout.LayoutParams(dp(40),dp(48)));
+        TextView logo=text("TIME",22,Color.WHITE);
+        logo.setTypeface(Typeface.SERIF,Typeface.BOLD);
+        GradientDrawable logoBg=new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{Color.rgb(255,74,79),Color.rgb(165,8,24)});
+        logoBg.setCornerRadius(dp(14));logoBg.setStroke(dp(1),Color.rgb(255,130,130));
+        logo.setBackground(logoBg);header.addView(logo,new LinearLayout.LayoutParams(dp(66),dp(46)));
+        TextView brand=text("TIME",22,Color.WHITE);brand.setTypeface(Typeface.SERIF,Typeface.BOLD);
+        brand.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
+        header.addView(brand,new LinearLayout.LayoutParams(0,dp(48),1));
+        TextView settings=text("⚙︎",25,Color.WHITE);settings.setOnClickListener(v->showSettings());
+        header.addView(settings,new LinearLayout.LayoutParams(dp(42),dp(48)));
+        root.addView(header,new LinearLayout.LayoutParams(-1,dp(54)));
 
-        content = vertical();
-        root.addView(content, new LinearLayout.LayoutParams(-1, 0, 1));
+        ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);
+        content=vertical();content.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        scroll.addView(content,new ScrollView.LayoutParams(-1,-2));
+        root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
 
-        nav = horizontal();
-        nav.setGravity(Gravity.CENTER);
-        nav.setPadding(dp(4), dp(8), dp(4), dp(5));
-        String[] labels = {"خانه", "تقویم", "کشورها", "مناسبت‌ها"};
-        String[] icons = {"⌂", "▦", "◎", "★"};
-        for (int i=0; i<labels.length; i++) {
+        nav=horizontal();nav.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        nav.setGravity(Gravity.CENTER);nav.setPadding(dp(4),dp(5),dp(4),dp(5));
+        String[] labels={"خانه","تقویم","کشورها","مناسبت‌ها"};
+        String[] icons={"⌂","▦","◎","★"};
+        for(int i=0;i<labels.length;i++){
             final int tab=i;
-            LinearLayout item=vertical();
-            item.setGravity(Gravity.CENTER);
+            LinearLayout item=vertical();item.setGravity(Gravity.CENTER);
             TextView ico=text(icons[i],22,Color.LTGRAY);
             TextView label=text(labels[i],11,Color.LTGRAY);
-            item.addView(ico); item.addView(label);
-            item.setPadding(0,dp(5),0,dp(4));
-            item.setOnClickListener(v -> showTab(tab));
-            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-2,1);
-            nav.addView(item,p);
+            item.addView(ico);item.addView(label);item.setPadding(0,dp(3),0,dp(3));
+            item.setOnClickListener(v->showTab(tab));
+            nav.addView(item,new LinearLayout.LayoutParams(0,-2,1));
         }
-        root.addView(nav);
-        setContentView(scroll);
+        root.addView(nav,new LinearLayout.LayoutParams(-1,dp(62)));
+        setContentView(root);
     }
     private void showTab(int tab) {
         currentTab=tab; content.removeAllViews();
@@ -256,7 +248,7 @@ public class MainActivity extends Activity {
                 TextView time=text(ClockFormatter.time(city,now,prefs.getBoolean("use_24_hour",true)),38,Color.WHITE);
                 time.setTypeface(Typeface.DEFAULT,Typeface.BOLD); times[i]=time; c.addView(time);
                 dates[i]=text(ClockFormatter.date(city,now),13,Color.LTGRAY); c.addView(dates[i]);
-                offsets[i]=text(ClockFormatter.offset(city,now),12,Color.rgb(245,199,107)); c.addView(offsets[i]);
+                offsets[i]=text(offsetDifference(city,now),12,Color.rgb(245,199,107)); c.addView(offsets[i]);
                 c.addView(text("منطقه زمانی  "+city.zone,10,Color.rgb(160,185,210)));
             }
         }
@@ -499,6 +491,14 @@ public class MainActivity extends Activity {
                 }
             }catch(Exception ex){holidayStatus.setText("خطا در نمایش رویدادها");}
         }));
+    }
+
+    private String offsetDifference(CountryCatalog.Country city,long millis) {
+        CountryCatalog.Country reference=CountryCatalog.byId(prefs.getString("reference_city","germany"));
+        int minutes=(java.util.TimeZone.getTimeZone(city.zone).getOffset(millis)
+                -java.util.TimeZone.getTimeZone(reference.zone).getOffset(millis))/60000;
+        int h=Math.abs(minutes)/60,m=Math.abs(minutes)%60;
+        return String.format(Locale.US,"%s%02d:%02d",minutes<0?"-":"+",h,m);
     }
 
     private void refreshWidget(){IntentHelper.update(this);}
