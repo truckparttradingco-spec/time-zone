@@ -381,7 +381,7 @@ public class MainActivity extends Activity {
         int requestedYear=holidayYear;
         holidayStatus.setText("تقویم "+country.name+" · در حال دریافت تعطیلات…");
         HolidayCalendar.load(this,country,requestedYear,force,(json,fromCache,error)->runOnUiThread(()->{
-            if(currentTab!=2||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
+            if(currentTab!=1||!selectedHolidayCountry.equals(country.id)||holidayYear!=requestedYear)return;
             if(json==null){
                 holidayStatus.setText(error==null?"اطلاعات تعطیلات در دسترس نیست.":error);
                 CalendarRenderer.render(this,holidayMonths,country,requestedYear,new JSONArray());
