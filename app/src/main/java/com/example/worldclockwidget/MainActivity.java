@@ -62,14 +62,14 @@ public class MainActivity extends Activity {
     private GradientDrawable panel(int top, int bottom, int stroke) {
         GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
                 new int[]{top, bottom});
-        d.setCornerRadius(dp(20));
+        d.setCornerRadius(dp(18));
         d.setStroke(dp(1), stroke);
         return d;
     }
     private LinearLayout card(LinearLayout parent) {
         LinearLayout c = new LinearLayout(this); c.setOrientation(LinearLayout.VERTICAL);
         c.setPadding(dp(12),dp(12),dp(12),dp(12));
-        c.setBackground(panel(Color.rgb(13,29,53), Color.rgb(7,17,34), Color.rgb(48,72,105)));
+        c.setBackground(panel(Color.BLACK, Color.BLACK, Color.rgb(36,80,120)));
         LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(-1,-2);
         cp.setMargins(0,dp(12),0,0); parent.addView(c,cp); return c;
     }
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(dp(16),dp(18),dp(16),dp(20));
         root.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{Color.rgb(4,15,34),Color.rgb(10,31,62),Color.rgb(3,10,24)}));
+                new int[]{Color.BLACK,Color.BLACK,Color.BLACK}));
         scroll.addView(root);
         LinearLayout brand = new LinearLayout(this);
         brand.setGravity(Gravity.CENTER_VERTICAL);
@@ -93,13 +93,13 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams titleParams=new LinearLayout.LayoutParams(-2,-2);
         titleParams.setMargins(dp(12),0,0,0); brand.addView(title,titleParams);
         root.addView(brand);
-        TextView subtitle=text("ساعت جهانی و تقویم کشورها",14,Color.LTGRAY); root.addView(subtitle);
-        TextView local=text("منطقه زمانی دستگاه: " + ZoneId.systemDefault().getId(),13,Color.rgb(255,193,65));
+        TextView subtitle=text("ساعت جهانی و تقویم کشورها",14,Color.WHITE); root.addView(subtitle);
+        TextView local=text("منطقه زمانی دستگاه: " + ZoneId.systemDefault().getId(),13,Color.rgb(245,199,107));
         root.addView(local);
         for(int i=0;i<3;i++) {
             final int slot=i;
             LinearLayout countryCard=card(root);
-            TextView heading=text("🌐  جایگاه " + (i+1) + " · انتخاب کشور / شهر",15,Color.rgb(255,199,75));
+            TextView heading=text("🌐  جایگاه " + (i+1) + " · انتخاب کشور / شهر",14,Color.rgb(245,199,107));
             heading.setTypeface(null,Typeface.BOLD); countryCard.addView(heading);
             Spinner spinner=new Spinner(this);
             List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
