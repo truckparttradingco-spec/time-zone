@@ -82,8 +82,6 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         int[] zones = {R.id.city_zone_1, R.id.city_zone_2, R.id.city_zone_3};
 
         boolean use24Hour = prefs.getBoolean("use_24_hour", true);
-        String clockPattern = use24Hour ? "HH:mm" : "h:mm a";
-        String datePattern = "MMM d, EEE";
 
         for (int id : ids) {
             RemoteViews views =
@@ -97,15 +95,11 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
 
                 // TextClock is hosted by the launcher. Each clock uses its own IANA time zone
                 // and follows Android's system clock without requiring the app to stay open.
-                views.setString(times[i], "setTimeZone", country.zone);
-                views.setString(times[i], "setFormat12Hour", clockPattern);
-                views.setString(times[i], "setFormat24Hour", clockPattern);
+                // Time zones and formats are declared directly in XML for RemoteViews safety.
 
                 // A second system-driven TextClock keeps the date correct at each city's
                 // midnight, even when that differs from the phone's local date.
-                views.setString(dates[i], "setTimeZone", country.zone);
-                views.setString(dates[i], "setFormat12Hour", datePattern);
-                views.setString(dates[i], "setFormat24Hour", datePattern);
+                // Date TextClock uses its XML-declared city time zone.
 
                 views.setTextViewText(zones[i], ClockFormatter.offset(country, now));
             }
