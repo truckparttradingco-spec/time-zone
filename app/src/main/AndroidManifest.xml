@@ -16,7 +16,8 @@
         <receiver
             android:name=".WorldClockWidgetProvider"
             android:label="ساعت جهانی"
-            android:exported="false">
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="android.intent.action.TIME_SET"/>
