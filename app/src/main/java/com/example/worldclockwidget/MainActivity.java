@@ -1,7 +1,10 @@
 package com.example.worldclockwidget;
 
 import android.app.Activity;
-import android.content.SharedPreferences;\nimport android.content.Intent;\nimport android.net.Uri;\nimport android.provider.Settings;
+import android.content.SharedPreferences;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -302,7 +305,9 @@ public class MainActivity extends Activity {
             }
         }));
         c.addView(button("درباره TIME",()->{
-            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.5\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها
+نسخه 6.5
+اطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
         }));
     }
 
