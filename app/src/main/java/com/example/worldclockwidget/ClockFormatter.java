@@ -9,6 +9,15 @@ public final class ClockFormatter {
     private ClockFormatter() {}
 
     public static String time(CountryCatalog.Country c, long millis) {
+        return time(c, millis, false);
+    }
+
+    public static String time(CountryCatalog.Country c, long millis, boolean force24Hour) {
+        if (force24Hour) {
+            com.ibm.icu.text.SimpleDateFormat f = new com.ibm.icu.text.SimpleDateFormat("HH:mm", Locale.forLanguageTag(c.localeTag));
+            f.setTimeZone(TimeZone.getTimeZone(c.zone));
+            return f.format(new Date(millis));
+        }
         DateFormat f = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.forLanguageTag(c.localeTag));
         f.setTimeZone(TimeZone.getTimeZone(c.zone));
         return f.format(new Date(millis));
