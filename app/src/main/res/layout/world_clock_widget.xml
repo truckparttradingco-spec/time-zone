@@ -25,7 +25,7 @@
         <TextView android:id="@+id/city_zone_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#F5C76B" android:textSize="9sp" android:gravity="center"/>
     </LinearLayout>
 
-    <View android:layout_width="1dp" android:layout_height="68dp" android:background="#245078"/>
+    <TextView android:layout_width="1dp" android:layout_height="68dp" android:text="" android:background="#245078"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -41,7 +41,7 @@
         <TextView android:id="@+id/city_zone_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text=" " android:textColor="#F5C76B" android:textSize="9sp" android:gravity="center"/>
     </LinearLayout>
 
-    <View android:layout_width="1dp" android:layout_height="68dp" android:background="#245078"/>
+    <TextView android:layout_width="1dp" android:layout_height="68dp" android:text="" android:background="#245078"/>
 
     <LinearLayout
         android:layout_width="0dp"
