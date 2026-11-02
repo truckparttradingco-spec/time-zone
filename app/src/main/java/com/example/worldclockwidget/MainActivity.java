@@ -103,8 +103,9 @@ public class MainActivity extends Activity {
             heading.setTypeface(null,Typeface.BOLD); countryCard.addView(heading);
             Spinner spinner=new Spinner(this);
             List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
-            ArrayAdapter<String> adapter=new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,labels);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); spinner.setAdapter(adapter);
+            ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.spinner_item,labels);
+            adapter.setDropDownViewResource(R.layout.spinner_dropdown_item); spinner.setAdapter(adapter);
+            spinner.setPopupBackgroundDrawable(panel(Color.rgb(10,25,46),Color.rgb(10,25,46),Color.rgb(70,95,130)));
             spinner.setSelection(CountryCatalog.indexOf(prefs.getString(keys[i],defaults[i])));
             countryCard.addView(spinner);
             times[i]=text("--:--",36,Color.WHITE); times[i].setTypeface(Typeface.DEFAULT,Typeface.BOLD); countryCard.addView(times[i]);
@@ -146,8 +147,8 @@ public class MainActivity extends Activity {
         holidayCountry = new Spinner(this);
         List<String> labels = new ArrayList<>();
         for (CountryCatalog.Country c : CountryCatalog.ALL) labels.add(c.toString());
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.spinner_item,labels);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         holidayCountry.setAdapter(adapter);
         holidayCountry.setSelection(CountryCatalog.indexOf(selectedHolidayCountry));
         section.addView(holidayCountry);
