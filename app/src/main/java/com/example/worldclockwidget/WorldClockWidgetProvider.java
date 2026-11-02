@@ -1,220 +1,52 @@
 package com.example.worldclockwidget;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.widget.RemoteViews;
 
-import com.ibm.icu.util.PersianCalendar;
-import com.ibm.icu.util.TimeZone;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class WorldClockWidgetProvider extends AppWidgetProvider {
+    private static final String PREFS = "world_clock_settings";
+    private static final String[] KEYS = {"slot_1","slot_2","slot_3"};
+    private static final String[] DEFAULTS = {"tehran","istanbul","shanghai"};
 
-    private static final String ACTION_UPDATE =
-            "com.example.worldclockwidget.UPDATE_CLOCKS";
-
-    private static final String[] PERSIAN_MONTHS = {
-            "فروردین", "اردیبهشت", "خرداد", "تیر",
-            "مرداد", "شهریور", "مهر", "آبان",
-            "آذر", "دی", "بهمن", "اسفند"
-    };
-
-    @Override
-    public void onUpdate(
-            Context context,
-            AppWidgetManager manager,
-            int[] ids) {
-
-        updateAll(context);
-        schedule(context);
+    @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
+        updateWidgets(context, manager, ids);
     }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
+    @Override public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-
-        if (ACTION_UPDATE.equals(intent.getAction())) {
-            updateAll(context);
-            schedule(context);
+        if (Intent.ACTION_TIME_CHANGED.equals(intent.getAction())
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(intent.getAction())
+                || Intent.ACTION_DATE_CHANGED.equals(intent.getAction())) {
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            int[] ids = manager.getAppWidgetIds(new ComponentName(context, WorldClockWidgetProvider.class));
+            updateWidgets(context, manager, ids);
         }
     }
-
-    private void updateAll(Context context) {
-        AppWidgetManager manager =
-                AppWidgetManager.getInstance(context);
-
-        int[] ids = manager.getAppWidgetIds(
-                new ComponentName(
-                        context,
-                        WorldClockWidgetProvider.class));
-
+    static void updateWidgets(Context context, AppWidgetManager manager, int[] ids) {
+        long now = System.currentTimeMillis();
         for (int id : ids) {
-            updateOne(context, manager, id);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.world_clock_widget);
+            android.content.SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            int[] names = {R.id.city_name_1,R.id.city_name_2,R.id.city_name_3};
+            int[] times = {R.id.city_time_1,R.id.city_time_2,R.id.city_time_3};
+            int[] dates = {R.id.city_date_1,R.id.city_date_2,R.id.city_date_3};
+            int[] zones = {R.id.city_zone_1,R.id.city_zone_2,R.id.city_zone_3};
+            for(int i=0;i<3;i++) {
+                CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(KEYS[i],DEFAULTS[i]));
+                views.setTextViewText(names[i], c.toString());
+                views.setTextViewText(times[i], ClockFormatter.time(c,now));
+                views.setTextViewText(dates[i], ClockFormatter.date(c,now));
+                views.setTextViewText(zones[i], ClockFormatter.offset(c,now));
+            }
+            Intent open = new Intent(context, MainActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(context, 0, open,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            views.setOnClickPendingIntent(R.id.widget_root, pi);
+            manager.updateAppWidget(id, views);
         }
-    }
-
-    private void schedule(Context context) {
-        Intent intent = new Intent(
-                context,
-                WorldClockWidgetProvider.class);
-
-        intent.setAction(ACTION_UPDATE);
-
-        PendingIntent pendingIntent =
-                PendingIntent.getBroadcast(
-                        context,
-                        71,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                                | PendingIntent.FLAG_IMMUTABLE);
-
-        AlarmManager alarmManager =
-                (AlarmManager) context.getSystemService(
-                        Context.ALARM_SERVICE);
-
-        if (alarmManager == null) return;
-
-        long now = System.currentTimeMillis();
-        long nextMinute = now - (now % 60000L) + 60000L;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !alarmManager.canScheduleExactAlarms()) {
-
-            alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    nextMinute,
-                    60000L,
-                    pendingIntent);
-
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    nextMinute,
-                    pendingIntent);
-
-        } else {
-
-            alarmManager.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    nextMinute,
-                    pendingIntent);
-        }
-    }
-
-    private void updateOne(
-            Context context,
-            AppWidgetManager manager,
-            int id) {
-
-        RemoteViews views = new RemoteViews(
-                context.getPackageName(),
-                R.layout.world_clock_widget);
-
-        long now = System.currentTimeMillis();
-
-        setTehran(views, now);
-        setIstanbul(views, now);
-        setShanghai(views, now);
-
-        manager.updateAppWidget(id, views);
-    }
-
-    private String formatTime(long now, String zone) {
-        SimpleDateFormat format =
-                new SimpleDateFormat("HH:mm", Locale.US);
-
-        format.setTimeZone(
-                java.util.TimeZone.getTimeZone(zone));
-
-        return format.format(new Date(now));
-    }
-
-    private void setTehran(RemoteViews views, long now) {
-        String zone = "Asia/Tehran";
-
-        TimeZone icuZone = TimeZone.getTimeZone(zone);
-
-        PersianCalendar calendar =
-                new PersianCalendar(icuZone, new Locale("fa", "IR"));
-
-        calendar.setTimeInMillis(now);
-
-        int day = calendar.get(PersianCalendar.DAY_OF_MONTH);
-        int month = calendar.get(PersianCalendar.MONTH);
-        int year = calendar.get(PersianCalendar.YEAR);
-
-        String date = toPersianDigits(
-                day + " " + PERSIAN_MONTHS[month] + " " + year);
-
-        views.setTextViewText(
-                R.id.time_tehran, formatTime(now, zone));
-
-        views.setTextViewText(R.id.greg_tehran, "");
-        views.setTextViewText(R.id.jalali_tehran, date);
-    }
-
-    private void setIstanbul(RemoteViews views, long now) {
-        String zone = "Europe/Istanbul";
-
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat(
-                        "d MMMM yyyy",
-                        new Locale("tr", "TR"));
-
-        dateFormat.setTimeZone(
-                java.util.TimeZone.getTimeZone(zone));
-
-        views.setTextViewText(
-                R.id.time_istanbul, formatTime(now, zone));
-
-        views.setTextViewText(
-                R.id.greg_istanbul,
-                dateFormat.format(new Date(now)));
-
-        views.setTextViewText(R.id.jalali_istanbul, "");
-    }
-
-    private void setShanghai(RemoteViews views, long now) {
-        String zone = "Asia/Shanghai";
-
-        SimpleDateFormat dateFormat =
-                new SimpleDateFormat(
-                        "yyyy MMMM d",
-                        Locale.US);
-
-        dateFormat.setTimeZone(
-                java.util.TimeZone.getTimeZone(zone));
-
-        views.setTextViewText(
-                R.id.time_shanghai, formatTime(now, zone));
-
-        views.setTextViewText(
-                R.id.greg_shanghai,
-                dateFormat.format(new Date(now)));
-
-        views.setTextViewText(R.id.jalali_shanghai, "");
-    }
-
-    private String toPersianDigits(String text) {
-        return text.replace('0', '۰')
-                .replace('1', '۱')
-                .replace('2', '۲')
-                .replace('3', '۳')
-                .replace('4', '۴')
-                .replace('5', '۵')
-                .replace('6', '۶')
-                .replace('7', '۷')
-                .replace('8', '۸')
-                .replace('9', '۹');
     }
 }
