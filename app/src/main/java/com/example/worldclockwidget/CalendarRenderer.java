@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ibm.icu.text.DateFormatSymbols;
+import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.TimeZone;
@@ -58,9 +59,12 @@ public final class CalendarRenderer {
                 try {
                     JSONObject item = holidays.getJSONObject(i);
                     LocalDate date = LocalDate.parse(item.optString("date"));
-                    long utc = date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+                    java.util.GregorianCalendar civil = new java.util.GregorianCalendar(
+                            java.util.TimeZone.getTimeZone(country.zone), Locale.US);
+                    civil.clear();
+                    civil.set(date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth(), 12, 0, 0);
                     Calendar local = Calendar.getInstance(zone, locale);
-                    local.setTimeInMillis(utc);
+                    local.setTimeInMillis(civil.getTimeInMillis());
                     if (local.get(Calendar.YEAR) != year) continue;
                     int month = local.get(Calendar.MONTH);
                     int day = local.get(Calendar.DAY_OF_MONTH);
@@ -175,8 +179,7 @@ public final class CalendarRenderer {
     }
 
     private static String dayNumber(int day, Locale locale) {
-        return new SimpleDateFormat("d", locale).format(new java.util.Date(
-                (long) (day - 1) * 86400000L));
+        return NumberFormat.getIntegerInstance(locale).format(day);
     }
 
     private static TextView label(Activity activity, String value, int size, int color, boolean bold) {
