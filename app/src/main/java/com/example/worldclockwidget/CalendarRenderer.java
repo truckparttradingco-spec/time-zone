@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,7 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +56,16 @@ public final class CalendarRenderer {
             for (int i = 0; i < holidays.length(); i++) {
                 try {
                     JSONObject item = holidays.getJSONObject(i);
+                    org.json.JSONArray types = item.optJSONArray("types");
+                    if (types != null && types.length() > 0) {
+                        boolean official = false;
+                        for (int typeIndex = 0; typeIndex < types.length(); typeIndex++) {
+                            String type = types.optString(typeIndex, "");
+                            if ("Public".equalsIgnoreCase(type) || "Bank".equalsIgnoreCase(type)
+                                    || "Authorities".equalsIgnoreCase(type)) official = true;
+                        }
+                        if (!official) continue;
+                    }
                     LocalDate date = LocalDate.parse(item.optString("date"));
                     java.util.GregorianCalendar civil = new java.util.GregorianCalendar(
                             java.util.TimeZone.getTimeZone(country.zone), Locale.US);
