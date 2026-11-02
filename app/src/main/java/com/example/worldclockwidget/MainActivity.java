@@ -305,9 +305,7 @@ public class MainActivity extends Activity {
             }
         }));
         c.addView(button("درباره TIME",()->{
-            c.addView(text("TIME · ساعت جهانی و تقویم کشورها
-نسخه 6.5
-اطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.5\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
         }));
     }
 
