@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="220dp"
+    android:minWidth="240dp"
     android:minHeight="82dp"
-    android:minResizeWidth="200dp"
+    android:minResizeWidth="220dp"
     android:minResizeHeight="78dp"
     android:initialLayout="@layout/world_clock_widget"
     android:resizeMode="horizontal"

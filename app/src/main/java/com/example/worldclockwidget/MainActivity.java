@@ -68,38 +68,38 @@ public class MainActivity extends Activity {
     }
     private LinearLayout card(LinearLayout parent) {
         LinearLayout c = new LinearLayout(this); c.setOrientation(LinearLayout.VERTICAL);
-        c.setPadding(dp(12),dp(12),dp(12),dp(12));
+        c.setPadding(dp(18),dp(18),dp(18),dp(18));
         c.setBackground(panel(Color.rgb(15,32,56), Color.rgb(7,20,38), Color.rgb(49,75,109)));
         LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(-1,-2);
-        cp.setMargins(0,dp(12),0,0); parent.addView(c,cp); return c;
+        cp.setMargins(0,dp(14),0,0); parent.addView(c,cp); return c;
     }
     private void buildScreen() {
         ScrollView scroll = new ScrollView(this);
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(16),dp(18),dp(16),dp(20));
+        root.setPadding(dp(16),dp(22),dp(16),dp(24));
         root.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR,
                 new int[]{Color.rgb(4,16,35),Color.rgb(7,25,49),Color.rgb(5,16,33)}));
         scroll.addView(root);
         LinearLayout brand = new LinearLayout(this);
         brand.setGravity(Gravity.CENTER_VERTICAL);
         brand.setPadding(dp(4),dp(4),dp(4),dp(8));
-        TextView logo = text("TIME",22,Color.WHITE);
+        TextView logo = text("TIME",25,Color.WHITE);
         logo.setTypeface(Typeface.SERIF,Typeface.NORMAL);
         logo.setBackground(panel(Color.rgb(255,35,35),Color.rgb(205,0,0),Color.rgb(255,80,80)));
-        logo.setPadding(dp(12),dp(7),dp(12),dp(7));
+        logo.setPadding(dp(18),dp(10),dp(18),dp(10));
         brand.addView(logo,new LinearLayout.LayoutParams(-2,-2));
-        TextView title=text("TIME",30,Color.WHITE);
+        TextView title=text("TIME",36,Color.WHITE);
         title.setTypeface(Typeface.SERIF,Typeface.BOLD);
         LinearLayout.LayoutParams titleParams=new LinearLayout.LayoutParams(-2,-2);
         titleParams.setMargins(dp(12),0,0,0); brand.addView(title,titleParams);
         root.addView(brand);
-        TextView subtitle=text("ساعت جهانی و تقویم کشورها",16,Color.rgb(220,228,240)); root.addView(subtitle);
-        TextView local=text("منطقه زمانی دستگاه: " + ZoneId.systemDefault().getId(),13,Color.rgb(245,199,107));
+        TextView subtitle=text("ساعت جهانی و تقویم کشورها",19,Color.rgb(220,228,240)); root.addView(subtitle);
+        TextView local=text("منطقه زمانی دستگاه: " + ZoneId.systemDefault().getId(),16,Color.rgb(245,199,107));
         root.addView(local);
         for(int i=0;i<3;i++) {
             final int slot=i;
             LinearLayout countryCard=card(root);
-            TextView heading=text("🌐  جایگاه " + (i+1) + " · انتخاب کشور / شهر",17,Color.rgb(245,199,107));
+            TextView heading=text("🌐  جایگاه " + (i+1) + " · انتخاب کشور / شهر",19,Color.rgb(245,199,107));
             heading.setTypeface(null,Typeface.BOLD); countryCard.addView(heading);
             Spinner spinner=new Spinner(this);
             List<String> labels=new ArrayList<>(); for(CountryCatalog.Country c:CountryCatalog.ALL) labels.add(c.toString());
@@ -108,9 +108,9 @@ public class MainActivity extends Activity {
             spinner.setPopupBackgroundDrawable(panel(Color.rgb(10,25,46),Color.rgb(10,25,46),Color.rgb(70,95,130)));
             spinner.setSelection(CountryCatalog.indexOf(prefs.getString(keys[i],defaults[i])));
             countryCard.addView(spinner);
-            times[i]=text("--:--",40,Color.WHITE); times[i].setTypeface(Typeface.DEFAULT,Typeface.BOLD); countryCard.addView(times[i]);
-            dates[i]=text("",16,Color.rgb(235,239,248)); countryCard.addView(dates[i]);
-            offsets[i]=text("",14,Color.rgb(245,199,107)); countryCard.addView(offsets[i]);
+            times[i]=text("--:--",44,Color.WHITE); times[i].setTypeface(Typeface.DEFAULT,Typeface.BOLD); countryCard.addView(times[i]);
+            dates[i]=text("",19,Color.rgb(235,239,248)); countryCard.addView(dates[i]);
+            offsets[i]=text("",16,Color.rgb(245,199,107)); countryCard.addView(offsets[i]);
             spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
                 boolean first=true;
                 @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
