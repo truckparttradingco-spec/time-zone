@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
 
     private final Runnable ticker = new Runnable() {
         @Override public void run() {
-            if (prefs == null) return;
+            if (prefs == null || currentTab != 0) return;
             long now = System.currentTimeMillis();
             for (int i=0;i<3;i++) {
                 CountryCatalog.Country c = CountryCatalog.byId(prefs.getString(keys[i], defaults[i]));
