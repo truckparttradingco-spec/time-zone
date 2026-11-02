@@ -2,7 +2,9 @@
     package="com.example.worldclockwidget">
     <application
         android:allowBackup="true"
-        android:label="ساعت جهانی"
+        android:label="TIME"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
