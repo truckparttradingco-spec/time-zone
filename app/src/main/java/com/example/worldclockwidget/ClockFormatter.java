@@ -42,6 +42,38 @@ public final class ClockFormatter {
         return localDate + "  |  " + gregorianFormat.format(new Date(millis));
     }
 
+
+    /** Compact date in the selected city's local calendar and language. */
+    public static String widgetDate(CountryCatalog.Country c, long millis) {
+        Locale locale;
+        String pattern;
+        boolean uppercase = false;
+        switch (c.id) {
+            case "tehran":
+                locale = new Locale.Builder().setLanguageTag("fa-IR-u-ca-persian").build();
+                pattern = "d MMMM";
+                break;
+            case "istanbul":
+                locale = Locale.forLanguageTag("tr-TR");
+                pattern = "d MMMM";
+                break;
+            case "shanghai":
+                locale = Locale.US;
+                pattern = "d MMM";
+                uppercase = true;
+                break;
+            default:
+                locale = Locale.forLanguageTag(c.localeTag);
+                pattern = "d MMM";
+                break;
+        }
+        com.ibm.icu.text.SimpleDateFormat f =
+                new com.ibm.icu.text.SimpleDateFormat(pattern, locale);
+        f.setTimeZone(TimeZone.getTimeZone(c.zone));
+        String value = f.format(new Date(millis));
+        return uppercase ? value.toUpperCase(Locale.US) : value;
+    }
+
     public static String offset(CountryCatalog.Country c, long millis) {
         TimeZone z = TimeZone.getTimeZone(c.zone);
         int total = z.getOffset(millis) / 60000;

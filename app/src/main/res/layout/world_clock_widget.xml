@@ -53,17 +53,14 @@
                 android:gravity="center"
                 android:includeFontPadding="false" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_date_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Europe/Berlin"
-                android:format12Hour="MMM d, EEE"
-                android:format24Hour="MMM d, EEE"
+                android:text="2 NOV"
                 android:textColor="#E5ECF5"
                 android:textSize="9sp"
                 android:fontFamily="sans-serif"
-                android:textLocale="en-US"
                 android:gravity="center"
                 android:includeFontPadding="false" />
 
@@ -128,17 +125,14 @@
                 android:gravity="center"
                 android:includeFontPadding="false" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_date_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Europe/Istanbul"
-                android:format12Hour="MMM d, EEE"
-                android:format24Hour="MMM d, EEE"
+                android:text="2 NOV"
                 android:textColor="#E5ECF5"
                 android:textSize="9sp"
                 android:fontFamily="sans-serif"
-                android:textLocale="en-US"
                 android:gravity="center"
                 android:includeFontPadding="false" />
 
@@ -203,17 +197,14 @@
                 android:gravity="center"
                 android:includeFontPadding="false" />
 
-            <TextClock
+            <TextView
                 android:id="@+id/city_date_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:timeZone="Asia/Shanghai"
-                android:format12Hour="MMM d, EEE"
-                android:format24Hour="MMM d, EEE"
+                android:text="2 NOV"
                 android:textColor="#E5ECF5"
                 android:textSize="9sp"
                 android:fontFamily="sans-serif"
-                android:textLocale="en-US"
                 android:gravity="center"
                 android:includeFontPadding="false" />
 

@@ -1,11 +1,14 @@
 package com.example.worldclockwidget;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import java.util.Calendar;
+import java.util.TimeZone;
 import android.widget.RemoteViews;
 
 import java.util.Locale;
@@ -14,6 +17,7 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
     private static final String PREFS = "world_clock_settings";
     private static final String[] KEYS = {"slot_1", "slot_2", "slot_3"};
     private static final String[] DEFAULTS = {"germany", "istanbul", "shanghai"};
+    private static final String ACTION_DATE_REFRESH = "com.example.worldclockwidget.ACTION_DATE_REFRESH";
 
     @Override public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
         updateWidgets(context, manager, ids);
@@ -33,6 +37,9 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
     @Override public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String action = intent.getAction();
+        if (ACTION_DATE_REFRESH.equals(action)) {
+            updateAll(context);
+        }
         if (Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)
                 || Intent.ACTION_DATE_CHANGED.equals(action)) {
@@ -97,10 +104,7 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
                 // and follows Android's system clock without requiring the app to stay open.
                 // Time zones and formats are declared directly in XML for RemoteViews safety.
 
-                // A second system-driven TextClock keeps the date correct at each city's
-                // midnight, even when that differs from the phone's local date.
-                // Date TextClock uses its XML-declared city time zone.
-
+                views.setTextViewText(dates[i], ClockFormatter.widgetDate(country, now));
                 views.setTextViewText(zones[i], ClockFormatter.offset(country, now));
             }
 
@@ -111,5 +115,28 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
             manager.updateAppWidget(id, views);
         }
+        scheduleNextDateRefresh(context, prefs);
+    }
+
+    private static void scheduleNextDateRefresh(Context context,
+            android.content.SharedPreferences prefs) {
+        long next = Long.MAX_VALUE;
+        for (int i = 0; i < 3; i++) {
+            CountryCatalog.Country country =
+                    CountryCatalog.byId(prefs.getString(KEYS[i], DEFAULTS[i]));
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(country.zone));
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 2);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            next = Math.min(next, calendar.getTimeInMillis());
+        }
+        Intent refresh = new Intent(context, WorldClockWidgetProvider.class);
+        refresh.setAction(ACTION_DATE_REFRESH);
+        PendingIntent pending = PendingIntent.getBroadcast(context, 7319, refresh,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarms != null) alarms.setAndAllowWhileIdle(AlarmManager.RTC, next, pending);
     }
 }
