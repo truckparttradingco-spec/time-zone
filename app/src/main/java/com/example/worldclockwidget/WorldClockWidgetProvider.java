@@ -38,12 +38,13 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
     @Override public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String action = intent.getAction();
-        if (ACTION_WIDGET_TICK.equals(action) || ACTION_DATE_REFRESH.equals(action)) {
-            updateAll(context);
-        }
-        if (Intent.ACTION_TIME_CHANGED.equals(action)
+        if (ACTION_WIDGET_TICK.equals(action) || ACTION_DATE_REFRESH.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)
-                || Intent.ACTION_DATE_CHANGED.equals(action)) {
+                || Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_BOOT_COMPLETED.equals(action)
+                || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)
+                || "android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED".equals(action)) {
             updateAll(context);
         }
     }
@@ -128,7 +129,16 @@ public class WorldClockWidgetProvider extends AppWidgetProvider {
         PendingIntent pending = PendingIntent.getBroadcast(context, 7319, refresh,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (alarms != null) alarms.setAndAllowWhileIdle(AlarmManager.RTC, nextMinute, pending);
+        if (alarms == null) return;
+        // Prefer an exact minute boundary when Android grants Alarms & reminders access.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+                && alarms.canScheduleExactAlarms()) {
+            alarms.setExactAndAllowWhileIdle(AlarmManager.RTC, nextMinute, pending);
+        } else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            alarms.setAndAllowWhileIdle(AlarmManager.RTC, nextMinute, pending);
+        } else {
+            alarms.setExact(AlarmManager.RTC, nextMinute, pending);
+        }
     }
 
 }
