@@ -34,7 +34,8 @@ public class MainActivity extends Activity {
     private final String[] defaults = {"germany","istanbul","shanghai"};
     private SharedPreferences prefs;
     private LinearLayout root, content, nav;
-    private TextView holidayStatus, holidayYearLabel;\n    private LinearLayout holidayMonths;
+    private TextView holidayStatus, holidayYearLabel;
+    private LinearLayout holidayMonths;
     private int holidayYear = Calendar.getInstance().get(Calendar.YEAR);
     private String selectedHolidayCountry = "germany";
     private int currentTab = 0;
@@ -59,6 +60,7 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         selectedHolidayCountry = prefs.getString("holiday_country", prefs.getString(keys[0], defaults[0]));
+        holidayYear = CalendarRenderer.currentYear(CountryCatalog.byId(selectedHolidayCountry));
         buildShell();
         showTab(0);
     }
@@ -273,7 +275,7 @@ public class MainActivity extends Activity {
             }
         }));
         c.addView(button("درباره TIME",()->{
-            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.3\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
+            c.addView(text("TIME · ساعت جهانی و تقویم کشورها\nنسخه 6.4\nاطلاعات تعطیلات از Nager.Date دریافت می‌شود.",13,Color.LTGRAY));
         }));
     }
 
